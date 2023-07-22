@@ -28,19 +28,18 @@
 
 eval "$(shellspec - -c) exit 1"
 
-Include 'spec/sysexits.sh'
+Include 'lib/sysexits.sh'
 
-% TESTFILE: 'past-exam-questions-to-csv.sh'
+% TESTFILE: 'bin/past-exam-questions-to-csv.sh'
 
 Describe '書き込み不可へのアウトプットの検証'
 	Parameters:dynamic
-		for option in --r5-haru --r4-haru --r3-haru --r2-aki --r1-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru; do
+		for option in --r05-haru --r04-haru --r03-haru --r02-aki --r01-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru; do
 			%data "${option}" ''                     "${EX_USAGE}"
 			%data "${option}" 'spec'                 "${EX_USAGE}"
 			%data "${option}" 'spec/unwritable-file' "${EX_CANTCREAT}"
 			%data "${option}" 'spec/unwritable-directory/file' "${EX_CANTCREAT}"
 			%data "${option}" 'non-existent/'        "${EX_USAGE}"
-			%data "${option}" 'non-existent/file'    "${EX_CANTCREAT}"
 		done
 	End
 
@@ -54,7 +53,7 @@ End
 
 Describe 'range の検証'
 	Parameters:dynamic
-		for option in --r5-haru --r4-haru --r3-haru --r2-aki --r1-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru; do
+		for option in --r05-haru --r04-haru --r03-haru --r02-aki --r01-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru; do
 			%data "${option}" 'a'      "${EX_USAGE}"
 			%data "${option}" '0'      "${EX_USAGE}"
 			%data "${option}" '0.0'    "${EX_USAGE}"
@@ -66,6 +65,7 @@ Describe 'range の検証'
 			%data "${option}" '1000'   "${EX_OK}"
 			%data "${option}" '1-9'    "${EX_OK}"
 			%data "${option}" '1-9,2,13' "${EX_OK}"
+			%data "${option}" '5 7'    "${EX_USAGE}"
 		done
 	End
 
@@ -83,13 +83,34 @@ Describe 'range の検証'
 	End
 End
 
+Describe 'image-dir の検証'
+	Parameters:block
+		'' "${EX_OK}"
+		'spec' "${EX_OK}"
+		'spec/unwritable-directory' "${EX_CANTCREAT}"
+	End
+
+	Example "${TESTFILE} --image-dir ${1}"
+		When run script "${TESTFILE}" '--image-dir' "${1}"
+		The length of stdout should equal 0
+		The status should equal "${2}"
+
+		case "${2}" in
+			"${EX_OK}")
+				The length of stderr should equal 0;;
+			*)
+				The length of stderr should not equal 0;;
+		esac
+	End
+End
+
 xDescribe 'アウトプット内容の検証'
 	Parameters:block
-		'--r5-haru=-'  'r05-haru.csv'
-		'--r4-haru=-'  'r04-haru.csv'
-		'--r3-haru=-'  'r03-haru.csv'
-		'--r2-aki=-'   'r02-aki.csv'
-		'--r1-aki=-'   'r01-aki.csv'
+		'--r05-haru=-' 'r05-haru.csv'
+		'--r04-haru=-' 'r04-haru.csv'
+		'--r03-haru=-' 'r03-haru.csv'
+		'--r02-aki=-'  'r02-aki.csv'
+		'--r01-aki=-'  'r01-aki.csv'
 		'--h31-haru=-' 'h31-haru.csv'
 		'--h30-aki=-'  'h30-aki.csv'
 		'--h30-haru=-' 'h30-haru.csv'

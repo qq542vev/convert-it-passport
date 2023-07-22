@@ -28,24 +28,23 @@
 
 eval "$(shellspec - -c) exit 1"
 
-Include 'spec/sysexits.sh'
+Include 'lib/sysexits.sh'
 
 % TESTFILE: 'glossary-to-csv.sh'
 
 Describe '書き込み不可へのアウトプットの検証'
 	Parameters:dynamic
-		for option in --strategy= --management= --technology=; do
-			%data "${option}" ''                 "${EX_USAGE}"
+		for option in --strategy --management --technology; do
+			%data "${option}" ''                     "${EX_USAGE}"
 			%data "${option}" 'spec'                 "${EX_USAGE}"
 			%data "${option}" 'spec/unwritable-file' "${EX_CANTCREAT}"
 			%data "${option}" 'spec/unwritable-directory/file' "${EX_CANTCREAT}"
 			%data "${option}" 'non-existent/'        "${EX_USAGE}"
-			%data "${option}" 'non-existent/file'    "${EX_CANTCREAT}"
 		done
 	End
 
-	Example "${TESTFILE} ${1}${2}"
-		When run script "${TESTFILE}" "${1}${2}"
+	Example "${TESTFILE} ${1}=${2}"
+		When run script "${TESTFILE}" "${1}=${2}"
 		The length of stdout should equal 0
 		The length of stderr should not equal 0
 		The status should equal "${3}"

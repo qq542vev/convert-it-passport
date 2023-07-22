@@ -47,7 +47,7 @@ case $me in
 ( * )	MSH_PREFIX=. ;;
 esac
 case $MSH_PREFIX in
-( */* | [!+-]* | *[!0123456789]* )
+( */* | [!+-]* | [+-]*[!0123456789]* )
  	MSH_PREFIX=$(cd -P -- "$PWD" && cd -- "$MSH_PREFIX" && pwd -P && echo X) ;;
 ( * )	MSH_PREFIX=$(cd -P -- "$PWD" && cd "./$MSH_PREFIX" && pwd -P && echo X) ;;
 esac || exit
