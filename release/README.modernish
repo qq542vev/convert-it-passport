@@ -1,0 +1,33 @@
+This directory contains the programs 'glossary-to-csv.sh' and 
+'past-exam-questions-to-csv.sh' along with a stripped-down copy of modernish 
+0.16.5, the portable shell programming library that takes the 'hell' out of 
+shell! This way of bundling allows running modernish programs without 
+installing the library system-wide.
+
+This bundled version of modernish should be considered as similar to compiled
+object code. Interactive use is not supported, the documentation and the
+regression test suite are missing, and all the comments are stripped out.
+
+To get the source and try the complete version, head over to:
+https://github.com/modernish/modernish/tree/0.16#readme
+To get this exact version (0.16.5), look under 'Releases'.
+
+Modernish is Free software, available under the following licence.
+Note that this licence is for modernish itself, NOT the bundled programs.
+
+----
+Licence for modernish 0.16.5
+
+Copyright (c) 2020 Martijn Dekker <martijn@inlv.org>, Groningen, Netherlands
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.

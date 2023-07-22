@@ -1,0 +1,4110 @@
+#! /bin/sh
+
+
+
+case ${MSH_VERSION+s} in
+( s )	unset -v MSH_VERSION || \exit ;;
+esac
+
+
+
+MSH_VERSION=0.16.5
+
+case ${KSH_VERSION-} in
+( 'Version '* | 2[0-9][0-9][0-9].* )
+	\command let .sh.subshell && \command ulimit -t unlimited 2>/dev/null ;;
+esac
+
+\unalias -a
+
+	\unset -v CDPATH GLOBIGNORE
+
+set +e
+
+case $- in
+( *a* )	set +a; _Msh_allexport=y ;;
+( * )	unset -v _Msh_allexport ;;
+esac
+
+_Msh_initExit() {
+	case ${MSH_IGNORE_FATAL_BUGS+s} in
+	( s )	PATH=${DEFPATH:+$DEFPATH:}${_Msh_PATH:+$_Msh_PATH:}${PATH}:/bin:/usr/bin \
+			printf 'modernish: %s\n' "$@" "Continuing anyway. THINGS WILL BREAK." 1>&2
+		return 0 ;;
+	esac
+	case ${PATH},${_Msh_PATH+s} in
+	( /dev/null,s )
+		PATH=${_Msh_PATH} ;;
+	esac
+	PATH=${DEFPATH:+$DEFPATH:}${PATH}:/bin:/usr/bin \
+		printf 'modernish: %s\n' ${1+"$@"} "Initialisation failed. Aborting." 1>&2
+	MSH_VERSION=failedinit
+	readonly MSH_VERSION
+	\exit 128
+}
+
+MSH_PREFIX=${_Msh_PREFIX:-$(_Msh_D=.; case $0 in (*/bin/modernish) _Msh_D=${0%/bin/*};; esac; CDPATH='' cd -- "$_Msh_D" && pwd -P)} || _Msh_initExit
+MSH_MDL=$MSH_PREFIX/lib/modernish/mdl
+MSH_AUX=$MSH_PREFIX/lib/modernish/aux
+case $HOME in ( / ) HOME=/. ;; esac
+MSH_CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}/modernish
+
+
+. "$MSH_AUX/std.sh" || _Msh_initExit
+
+case ${_Msh_DEFPATH-} in
+( /* )	DEFPATH=${_Msh_DEFPATH} ;;
+( '' )
+. "$MSH_AUX/defpath.sh" || _Msh_initExit
+;; esac
+
+case ${_Msh_SHELL-} in
+( /* )	MSH_SHELL=${_Msh_SHELL} ;;
+( '' )
+
+_Msh_test=$( command . "$MSH_AUX/fatal.sh" || echo BUG )
+case ${_Msh_test} in
+( "${PPID:-no_match_on_no_PPID}" ) ;;
+( * ) _Msh_initExit "Fatal shell bug(s) detected; this shell cannot run modernish." ;;
+esac
+
+. "$MSH_AUX/goodsh.sh" || _Msh_initExit
+
+;; esac
+
+unset -v _Msh_PREFIX _Msh_DEFPATH _Msh_SHELL
+
+_Msh_PATH=$PATH
+PATH=/dev/null
+
+
+case ${RANDOM+s},${RANDOM-} in
+( s, | s,*[!0123456789]* )
+	unset -v RANDOM ;;
+( s,* )
+	RANDOM=$((RANDOM ^ $$))
+	case $RANDOM,$RANDOM,$RANDOM,$RANDOM in
+	( "$RANDOM,$RANDOM,$RANDOM,$RANDOM" )
+		unset -v RANDOM ;;
+	esac ;;
+esac
+readonly RANDOM
+
+
+if	! command -v local >/dev/null \
+	&& command -v typeset >/dev/null \
+	&& _Msh_testFn() { typeset _Msh_test && _Msh_test=7; } \
+	&& _Msh_test=42 \
+	&& _Msh_testFn
+then
+	case ${_Msh_test} in
+	( 42 )  alias local=typeset ;;
+	esac
+fi
+
+
+		CC01=''	CC02=''	CC03=''	CC04=''	CC05=''	CC06=''	CC07=''
+CC08=''	CC09='	'			CC0B=''	CC0C=''	CC0D=''	CC0E=''	CC0F=''
+CC10=''	CC11=''	CC12=''	CC13=''	CC14=''	CC15=''	CC16=''	CC17=''
+CC18=''	CC19=''	CC1A=''	CC1B=''	CC1C=''	CC1D=''	CC1E=''	CC1F=''
+CC7F=''
+CC0A='
+'
+readonly     CC01 CC02 CC03 CC04 CC05 CC06 CC07 \
+	CC08 CC09 CC0A CC0B CC0C CC0D CC0E CC0F \
+	CC10 CC11 CC12 CC13 CC14 CC15 CC16 CC17 \
+	CC18 CC19 CC1A CC1B CC1C CC1D CC1E CC1F \
+	CC7F
+
+readonly "CCe=$CC1B" "CCa=$CC07" "CCb=$CC08" "CCf=$CC0C" "CCn=$CC0A" "CCr=$CC0D" "CCt=$CC09" "CCv=$CC0B"
+readonly "CONTROLCHARS=$CC01$CC02$CC03$CC04$CC05$CC06$CC07$CC08$CC09$CC0A$CC0B$CC0C$CC0D$CC0E$CC0F$CC10$CC11$CC12$CC13$CC14$CC15$CC16$CC17$CC18$CC19$CC1A$CC1B$CC1C$CC1D$CC1E$CC1F$CC7F"
+readonly "WHITESPACE= $CCt$CCn$CCv$CCf$CCr"
+readonly "ASCIIUPPER=ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+readonly "ASCIILOWER=abcdefghijklmnopqrstuvwxyz"
+readonly "ASCIIALNUM=0123456789${ASCIIUPPER}${ASCIILOWER}"
+readonly "SHELLSAFECHARS=${ASCIIALNUM}%+,./:=@_^!-"
+readonly "ASCIICHARS=${CONTROLCHARS} \"#\$&'()*;<>?[\\\\\\]\`{|}~${SHELLSAFECHARS}"
+
+case $- in
+( *i* )	;;
+( * )	case ${ZSH_VERSION+z} in
+	( z )
+
+		;;
+	( * )
+
+		unset -v IFS
+		IFS=" $CCt$CCn" ;;
+	esac ;;
+esac
+
+SIGPIPESTATUS=$(PATH=$DEFPATH exec "$MSH_SHELL" -c 'kill -s PIPE "$$" && echo IGNORED')
+SIGPIPESTATUS=${SIGPIPESTATUS:-$?}
+case $SIGPIPESTATUS in
+( IGNORED )
+	SIGPIPESTATUS=99999 ;;
+( '' | *[!0123456789]* | ? | ?? | 1[01]? | 12[!9] )
+	_Msh_initExit "Can't determine SIGPIPESTATUS. Bad value: $SIGPIPESTATUS" ;;
+esac
+readonly SIGPIPESTATUS
+
+
+
+isset() {
+	eval "case \${$1+s} in ( '' ) return 1 ;; esac"
+}
+
+alias not='! '
+
+alias so='{ let "$?==0"; }'
+
+alias forever='while :;'
+
+unset -v _Msh_die_isrunning _Msh__V_Msh_trapDIE__SP _Msh_POSIXtrapDIE
+case $(LC_ALL=C PATH=$DEFPATH exec ps -oppid,pid -p1 2>/dev/null) in
+( *PPID*[" $CCt"]PID${CCn}* | *PPID*[" $CCt"]PID )
+	unset -v _Msh_psBroken ;;
+( * )	_Msh_psBroken='-l' ;;
+esac
+readonly _Msh_psBroken
+
+
+	die() {
+
+		_Msh_E=$?
+
+		case ${_Msh_die_isrunning+s} in
+		( s )	_Msh_doExit 128 "$@" ;;
+		esac
+		_Msh_die_isrunning=y
+		command alias die='_Msh_doExit 128'
+
+
+
+
+		{ command : 9<&0; } 2>/dev/null || exec </dev/null
+		{ {
+			case ${_Msh__V_Msh_trapDIE__SP+s} in
+			( s )	while let "(_Msh__V_Msh_trapDIE__SP-=1) >= 0"; do
+					_Msh_doOneStackTrap DIE "${_Msh__V_Msh_trapDIE__SP}" "${_Msh_E}" 0<&8 &
+				done ;;
+			esac
+			case ${_Msh_POSIXtrapDIE+p} in
+			( p )	eval "setstatus ${_Msh_E}; ${_Msh_POSIXtrapDIE}" 0<&8 & ;;
+			esac
+			put "${ME##*/} died${1+: }$@$CCn" >| /dev/tty	#\  BUG_DEVTTY compat
+			if ! is onterminal 2; then
+				put "${ME##*/} died${1+: }$@$CCn" >&2	#/
+			fi
+		} & } 8<&0
+
+		_Msh_tPID=$!
+
+		export "PATH=$DEFPATH" LC_ALL=C
+		set -f +e
+		IFS=$CCn
+		unset -f ps awk
+
+
+		insubshell -p
+		command kill -s KILL $(exec ps ${_Msh_psBroken:--oppid,pid} \
+		| exec awk -v currshpid="$REPLY" -v mainshpid="$$" -v dietrapspid="${_Msh_tPID}" \
+		'	NR == 1	{ for (i = 1; i <= NF; i++) if ($i == "PPID") pp = i; else if ($i == "PID") p = i; }
+			NR > 1	{ subpidlist[$pp] = (subpidlist[$pp])(" ")($p); ppid[$p] = $pp; }
+			END {
+				if (!(mainshpid in ppid)) {
+
+
+					printsubpids(jobmain(currshpid));
+				} else {
+					printsubpids(mainshpid);
+				}
+			}
+			function jobmain(pid) {
+				while (ppid[pid] in ppid && ppid[ppid[pid]] != ppid[pid]) {
+					pid = ppid[pid];
+				}
+				return pid;
+			}
+			function printsubpids(pid,   numsubs, i, subpid) {
+				if (pid != currshpid) print pid;
+				numsubs = split(subpidlist[pid], subpid, " ");
+				for (i = 1; i <= numsubs; i++) {
+					if (subpid[i] != dietrapspid) printsubpids(subpid[i]);
+				}
+			}
+		') 2>/dev/null
+		command trap - 0
+		command exit 128
+	}
+
+alias exit=_Msh_doExit
+unset -v _Msh_exit_inUsage
+_Msh_doExit() {
+	_Msh_exit_status=$?
+	unset -v _Msh_exit_u
+	while case ${1-} in ( -- ) shift; break ;; ( -* ) ;; ( * ) break ;; esac; do
+		case $1 in
+		( -u )	_Msh_exit_u= ;;
+		( -* )	die "exit: invalid option: $1" ;;
+		esac
+		shift
+	done
+	let $# && _Msh_exit_status=$(( ($1) & 255 )) && shift
+	let _Msh_exit_status 1>&2 && exec 1>&2
+	let $# && put "${ME##*/}: ${@}${CCn}"
+	isset _Msh_exit_u && ! isset _Msh_exit_inUsage && isset -f showusage && (_Msh_exit_inUsage= ; showusage)
+	command exit "${_Msh_exit_status}"
+}
+
+chdir() {
+	unset -v _Msh_cD_f _Msh_cD_L
+	while	case ${1-} in
+		( -f )	_Msh_cD_f= ;;
+		( -L )	_Msh_cD_L=L ;;
+		( -P )	unset -v _Msh_cD_L ;;
+		( -- )	shift; break ;;
+		( -[!-]?* )
+			_Msh_cD__o=${1#-}; shift
+			while ! str empty "${_Msh_cD__o}"; do
+				set -- "-${_Msh_cD__o#"${_Msh_cD__o%?}"}" "$@"; _Msh_cD__o=${_Msh_cD__o%?}	#"
+			done; unset -v _Msh_cD__o; continue ;;
+		( -* )	die "chdir: invalid option: $1" ;;
+		( * )	break ;;
+		esac
+	do
+		shift
+	done
+
+
+	case ${#},${1-} in
+	( 1,*/* | 1,[!+-]* | 1,*[!0123456789]* )
+		;;
+	( 1, )  die "chdir: empty string" ;;
+	( 1,* )	set -- "./$1" ;;
+	( * )   die "chdir: need 1 operand, got $#" ;;
+	esac
+	if ! CDPATH='' command cd "-${_Msh_cD_L:-P}" -- "$1"; then
+		isset _Msh_cD_f && unset -v _Msh_cD_f _Msh_cD_L && return 1
+		die "chdir: failed to change directory to '$1'"
+	fi
+	unset -v _Msh_cD_f _Msh_cD_L
+}
+
+setstatus() {
+	case ${#} in
+	( 1 )	_Msh_sS_E=$(($1))
+		case ${_Msh_sS_E} in
+		( -* )	die "setstatus: negative exit status not supported" ;;
+		( * )	eval "unset -v _Msh_sS_E; return ${_Msh_sS_E}" ;;
+		esac ;;
+	( * )	die "setstatus: need 1 argument, got $#" ;;
+	esac
+}
+
+_Msh_using=''
+use() {
+	case $- in
+	( *a* )
+
+
+		set +a; use "$@"; eval "set -a; return $?" ;;
+	esac
+	unset -v _Msh_use_o
+	while	case ${1-} in
+		( -- )		shift; break ;;
+		( -q )		_Msh_use_o=q ;;
+		( -e )		_Msh_use_o=e ;;
+		( -* )		die "use: unknown option: $1" ;;
+		( * )		break ;;
+		esac
+	do
+		shift
+	done
+	case ${_Msh_use_o-} in
+	( ? )	let "$# == 1" || die "use -${_Msh_use_o}: need 1 argument, got $#" ;;
+	( * )	let "$#" || die "use: need at least 1 argument, got $#" ;;
+	esac
+	case $1 in
+	( '' | *[!$SHELLSAFECHARS]* | /* | */ | *//* | *.mm )
+		isset _Msh_use_o && unset -v _Msh_use_o && return 2
+		die "use: invalid module name: $1" ;;
+	esac
+	str in " ${_Msh_using} " " $1 " && unset -v _Msh_use_o && return 0
+	case ${_Msh_use_o-} in
+	( q )	unset -v _Msh_use_o
+		return 1 ;;
+	( e )	unset -v _Msh_use_o
+		is reg "$MSH_MDL/$1.mm" || is dir "$MSH_MDL/$1"
+		return ;;
+	esac
+	_Msh_using=${_Msh_using}${_Msh_using:+ }$1
+	if is dir "$MSH_MDL/$1" && ! is reg "$MSH_MDL/$1.mm"; then
+		let "$# == 1" || die "use: arguments cannot be passed to module directory: $1"
+
+		push -f; set +f; set -- "$MSH_MDL/$1"/*; pop -f
+		for _Msh_use_F do
+			{ is reg "${_Msh_use_F}" && str end "${_Msh_use_F}" '.mm'; } || is dir "${_Msh_use_F}" || continue
+			_Msh_use_F=${_Msh_use_F#"$MSH_MDL/"}
+			_Msh_use_F=${_Msh_use_F%.mm}
+			str match "${_Msh_use_F}" "*[!$SHELLSAFECHARS]*" && continue
+			use -- "${_Msh_use_F}"
+		done
+		unset -v _Msh_use_F
+		return
+	fi
+	is reg "$MSH_MDL/$1.mm" || die "use: module $1 not found"
+	_Msh_doUse "$@" || die "use: initialisation of module $1 failed"
+} >&2
+case ${KSH_VERSION-} in
+( 'Version '* | 2[0-9][0-9][0-9].* )
+
+
+	_Msh_doUse() {
+		let .sh.subshell && command ulimit -t unlimited 2>/dev/null
+		. "$MSH_MDL/$1.mm"
+	} ;;
+( * )
+	_Msh_doUse() {
+		. "$MSH_MDL/$1.mm"
+	} ;;
+esac
+
+
+unset -v _Msh_cap
+_Msh_cap=''
+
+_Msh_CAP_ADDASSIGN() {
+(	_Msh_test=a
+	PATH=/dev/null
+	MSH_NOT_FOUND_OK=y
+	_Msh_test+=b
+	case ${_Msh_test} in
+	( ab )	;;
+	( * )	\exit 1 ;;
+	esac
+) 2>/dev/null || return 1
+}
+_Msh_CAP_ANONFUNC() {
+( eval '_Msh_test=
+
+	() {
+		_Msh_test=$1
+	} anon
+
+	case ${_Msh_test} in
+	( anon ) ;;
+	( * ) \exit 1 ;;
+	esac'
+) 2>/dev/null || return 1
+}
+_Msh_CAP_ARITHCMD() {
+_Msh_test=35
+( command eval '(( _Msh_test /= (5) ))' ) 2>/dev/null && eval '(( _Msh_test /= (5) ))'
+case ${_Msh_test} in
+( 7 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_ARITHFOR() {
+(eval 'for ((;0;)) do :; done' 2>/dev/null) || return 1
+}
+_Msh_CAP_ARITHPP() {
+(	: $((i=0)) $((i++)) $((++i)) $((i--)) $((--i))
+) 2>| /dev/null || return 1
+}
+_Msh_CAP_BUG_ALIASCSHD() {
+! (
+	command alias _Msh_1='{ ' _Msh_2='}'
+	eval '_Msh_1
+		: || : <<-EOF
+		$( : )
+		EOF
+	_Msh_2'
+) 2>/dev/null
+}
+_Msh_CAP_BUG_ALIASCSUB() {
+! (
+	command alias _Msh_1='{ ' _Msh_2='}'
+	eval ': $(_Msh_1
+		: ; _Msh_2)'
+) 2>/dev/null
+}
+_Msh_CAP_BUG_ALIASPOSX() {
+! (
+	PATH=/dev/null
+	unset -f shopt
+	command unalias shopt
+
+	command alias _Msh_test='! '
+
+	unset -v POSIXLY_CORRECT
+	command -v shopt && command shopt -s expand_aliases
+
+
+	POSIXLY_CORRECT=y command :
+
+
+	eval '_Msh_test { _Msh_test :; }'
+) >/dev/null 2>&1
+}
+_Msh_CAP_BUG_APPENDC() {
+! (
+	unset -v _Msh_D _Msh_i
+	command umask 077
+	PATH=$DEFPATH
+	unset -f rm
+	command trap 'exec rm -rf "${_Msh_D-}" &' 0 INT PIPE TERM
+	_Msh_i=${RANDOM:-0}
+	until _Msh_D=/tmp/_Msh_BUG_APPENDC.$$.${_Msh_i}; command mkdir "${_Msh_D}" 2>/dev/null; do
+		let "$? > 125" && die "BUG_APPENDC.t: system error: 'mkdir' failed"
+		is -L dir /tmp && can write /tmp || die "BUG_APPENDC.t: system error: /tmp directory not writable"
+		_Msh_i=$((_Msh_i+1))
+	done
+
+	set -C
+	{ command : >> "${_Msh_D}/file"; } 2>/dev/null
+	is reg "${_Msh_D}/file"
+)
+}
+_Msh_CAP_BUG_ARITHINIT() {
+! (set +u; : $((_Msh_test))) 2>/dev/null
+}
+_Msh_CAP_BUG_ARITHLNNO() {
+thisshellhas LINENO || return 1
+
+! ( let "$LINENO == $((LINENO))" ) 2>/dev/null
+}
+_Msh_CAP_BUG_ARITHSPLT() {
+push IFS
+IFS=0
+set -- $((103))
+pop IFS
+case ${#},${1-} in
+( 1,103 ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_ARITHTYPE() {
+: $((_Msh_test = 1))
+_Msh_test=128/32
+case ${_Msh_test} in
+( 4 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_ASGNCC01() {
+push IFS
+_Msh_test=X${CC01}X
+IFS=$CC01
+_Msh_test=${_Msh_test}
+IFS=
+pop IFS
+str eq "${_Msh_test}" XX
+}
+_Msh_CAP_BUG_ASGNLOCAL() {
+thisshellhas LOCALVARS || return 1
+_Msh_test=
+_Msh_testFn() {
+	local _Msh_test
+	_Msh_test=foo command true
+}
+_Msh_testFn
+unset -f _Msh_testFn
+! isset _Msh_test
+}
+_Msh_CAP_BUG_BRACQUOT() {
+case b in
+( ['a-c'] | ["!"a] ) ;;
+( [a-c] ) return 1 ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CASELIT() {
+case '[0-9]' in
+( [0-9] ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CASEPAREN() {
+! (eval ': $(case x in y) : ;; esac)') 2>/dev/null
+}
+_Msh_CAP_BUG_CASESTAT() {
+! :
+
+case foo in
+( * )	_Msh_test=$? ;;
+esac
+
+case ${_Msh_test-} in
+( 0 )	;;
+( 1 )	return 1 ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CDPCANON() {
+(
+    command cd -P /////dev
+    str eq "$PWD" //dev
+)
+}
+_Msh_CAP_BUG_CMDEXEC() {
+(
+	_Msh_testFn() {
+		command exec
+	}
+
+	set --
+	_Msh_testFn x
+	case ${#},${1-} in
+	( 1,x )	;;
+	( * )	\exit 1 ;;
+	esac
+)
+}
+_Msh_CAP_BUG_CMDEXPAN() {
+set -- command true
+_Msh_test=$(PATH=$DEFPATH; "$@")
+case ${_Msh_test} in
+( true | */true )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CMDOPTEXP() {
+push PATH MSH_NOT_FOUND_OK
+PATH=/dev/null
+_Msh_test=-p
+MSH_NOT_FOUND_OK=y
+! command "${_Msh_test}" true 2>/dev/null
+pop --keepstatus PATH MSH_NOT_FOUND_OK
+}
+_Msh_CAP_BUG_CMDPV() {
+push PATH
+PATH=/dev/null
+! { command -pv : && command -pv ls; } >/dev/null 2>&1
+pop --keepstatus PATH
+}
+_Msh_CAP_BUG_CMDSETPP() {
+set -- one two
+command set -- one two three
+case $# in
+( 2 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CMDSPASGN() {
+_Msh_test=foo command :
+
+isset -v _Msh_test
+}
+_Msh_CAP_BUG_CMDSPEXIT() {
+! (	command set -@
+	command readonly _Msh_test=foo
+	command export _Msh_test=bar
+	command . /dev/null/nonexistent
+	\exit 0
+) 2>/dev/null
+}
+_Msh_CAP_BUG_CMDVRESV() {
+! PATH=/dev/null command -v if >/dev/null
+}
+_Msh_CAP_BUG_CSNHDBKSL() {
+_Msh_test=$(command umask 077; PATH=$DEFPATH command cat <<'EOT'
+abc
+def \
+ghi
+jkl
+EOT
+)
+case ${_Msh_test} in
+( "abc${CCn}def ghi${CCn}jkl" )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CSUBRMLF() {
+_Msh_test=one${CCn}$( : )two
+case ${_Msh_test} in
+( onetwo ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_CSUBSTDO() {
+{ _Msh_test=$(putln hi 2>/dev/null); } >&-
+case ${_Msh_test} in
+( '' )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_DEVTTY() {
+push -C
+set -C
+if is -L charspecial /dev/tty >|/dev/tty; then
+	command : >/dev/tty
+	_Msh_test=$?
+else
+	_Msh_test=0
+fi 2>/dev/null
+pop -C
+let "_Msh_test != 0"
+}
+_Msh_CAP_BUG_DOLRCSUB() {
+thisshellhas CESCQUOT || return
+
+case $(IFS=''; PATH=$DEFPATH command echo $$'hi') in
+( hi )	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_DQGLOB() {
+case \\foo in
+( "\*" ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_EVALCOBR() {
+for _Msh_test in 1; do
+	eval "command continue${CCn}return 0" 2>/dev/null
+done
+
+for _Msh_test in 1; do
+	eval "command break${CCn}return 0" 2>/dev/null
+done
+
+return 1
+}
+_Msh_CAP_BUG_EXPORTUNS() {
+export _Msh_test
+case $(PATH=$DEFPATH "$MSH_SHELL" -c 'echo "${_Msh_test+SET}"') in
+( SET )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_FNSUBSH() {
+_Msh_testFn() { PATH=$DEFPATH command echo main; }
+case $( _Msh_testFn() { PATH=$DEFPATH command echo sub; }; _Msh_testFn ) in
+( main ) unset -f _Msh_testFn ;;
+( * ) unset -f _Msh_testFn; return 1 ;;
+esac
+}
+_Msh_CAP_BUG_FORLOCAL() {
+_Msh_testFn() {
+	for _Msh_test in ok; do
+		:
+	done
+}
+_Msh_testFn
+unset -f _Msh_testFn
+case ${_Msh_test+s} in
+( '' )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_GETOPTSMA() {
+thisshellhas LOCALVARS || return 1
+
+_Msh_test=$(
+	_Msh_testFn() {
+		local OPTIND
+		while command getopts x: _Msh_test 2>/dev/null; do
+			putln "${_Msh_test}"
+		done
+	}
+
+
+	_Msh_testFn -x
+)
+
+case ${_Msh_test} in
+( ':' )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_HDOCBKSL() {
+_Msh_test=$(command umask 077; PATH=$DEFPATH command cat <<-:
+	abc
+	def \
+	ghi
+	jkl\
+	:
+	:
+)
+case ${_Msh_test} in
+( "abc${CCn}def ghi${CCn}jkl" )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_HDOCMASK() {
+(command umask a+rw,u-r; : <<-EOF
+	EOF
+) 2>/dev/null && return 1 || return 0
+}
+_Msh_CAP_BUG_IFSCC01PP() {
+set -- one two three
+push IFS
+IFS=$CC01
+set -- "$@"
+IFS=
+pop IFS
+case ${1-},${2-},${3-},${4-},${5-},${6-},${7-},${8-} in
+( ,,o,,n,,e${CC7F}, | one${CC01}two${CC01}three,,,,,,, )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_IFSGLOBC() {
+push IFS
+IFS='*'
+case foo in
+( * )	pop IFS
+	return 1 ;;
+esac
+IFS=
+pop IFS
+return 0
+}
+_Msh_CAP_BUG_IFSGLOBP() {
+isset IFS && _Msh_test=$IFS
+
+case $- in
+( *f* )	set +f
+	IFS='*'
+	set -- /*
+	set -f ;;
+( * )	IFS='*'
+	set -- /* ;;
+esac
+
+case ${_Msh_test+s} in
+( s )	IFS=${_Msh_test} ;;
+( '' )	unset -v IFS ;;
+esac
+
+let "$# == 1" && str eq "$1" "/*"
+}
+_Msh_CAP_BUG_IFSGLOBS() {
+push IFS
+_Msh_test=abcd
+IFS=?; set -- a c
+case ${_Msh_test#"$*"},abc in
+( d,"$*" )	;;
+( * )		setstatus 1 ;;
+esac
+pop --keepstatus IFS
+}
+_Msh_CAP_BUG_IFSISSET() {
+case ${IFS:+n} in
+( '' )	set -- "a b c"
+	set -- $1
+	case $# in
+	( 1 )	_Msh_t_IFS='' ;;
+	( * )	unset -v _Msh_t_IFS ;;
+	esac ;;
+( * )	_Msh_t_IFS=$IFS ;;
+esac
+
+unset -v IFS
+case ${IFS+s} in
+( '' )	_Msh_test=n ;;
+( s )	_Msh_test=y ;;
+esac
+
+case ${_Msh_t_IFS+s} in
+( s )	IFS=${_Msh_t_IFS}; unset -v _Msh_t_IFS ;;
+( * )	unset -v IFS ;;
+esac
+
+case ${_Msh_test} in
+( n )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_ISSETLOOP() {
+push _Msh_i _Msh_r
+_Msh_r=
+for _Msh_i in 1 2; do
+	if str eq "${_Msh_r+s}" s; then
+		_Msh_test=${_Msh_test-}s; unset -v _Msh_r
+	else
+		_Msh_test=${_Msh_test-}u; _Msh_r=
+	fi
+done
+pop _Msh_i _Msh_r
+str eq "${_Msh_test}" ss
+}
+_Msh_CAP_BUG_KUNSETIFS() {
+push IFS
+IFS=''
+_Msh_test='unset -v IFS; isset -v IFS'
+(eval "${_Msh_test}")
+pop --keepstatus IFS
+}
+_Msh_CAP_BUG_LNNOALIAS() {
+thisshellhas LINENO || return 1
+
+alias _Msh_BUG_LNNOALIAS_testAlias='_Msh_test=$LINENO'
+eval _Msh_BUG_LNNOALIAS_testAlias
+unalias _Msh_BUG_LNNOALIAS_testAlias
+case ${_Msh_test} in
+( 0 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_LNNOEVAL() {
+thisshellhas LINENO || return 1
+
+eval '_Msh_test=$LINENO'
+case ${_Msh_test} in
+( 0 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_LNNONEG() {
+. "$MSH_AUX/cap/BUG_LNNONEG.sh"
+:
+case ${_Msh_test} in
+( "${LINENO-}" )
+	return 1 ;;
+( -* )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_LOOPRET1() {
+_Msh_testFn() {
+	until return 42; do
+
+		return 13
+	done
+}
+
+_Msh_testFn
+_Msh_test=$?
+unset -f _Msh_testFn
+case ${_Msh_test} in
+( 0 )	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_LOOPRET2() {
+_Msh_testFn() {
+	setstatus 42
+	until return; do
+
+		return 13
+	done
+}
+
+_Msh_testFn
+_Msh_test=$?
+unset -f _Msh_testFn
+case ${_Msh_test} in
+( 0 )	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_LOOPRET3() {
+( . "$MSH_AUX/cap/BUG_LOOPRET3.sh"
+
+  \exit 42 )
+
+case $? in
+( 0 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_MULTIBIFS() {
+case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
+( *[Uu][Tt][Ff]8* | *[Uu][Tt][Ff]-8* )
+	thisshellhas WRN_MULTIBYTE && return 1 ;;
+( * )	return 1 ;;
+esac
+
+push IFS
+IFS=é
+set -- : :
+_Msh_test="$*"
+pop IFS
+
+LC_ALL=C command true
+
+case ${_Msh_test} in
+( :é: )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_NOCHCLASS() {
+case x in
+( [[:alnum:]] )
+	case x in
+	( [![:space:]] ) return 1 ;;
+
+	esac ;;
+esac
+}
+_Msh_CAP_BUG_NOEXPRO() {
+! (
+	_Msh_test=foo
+	readonly _Msh_test
+	export _Msh_test
+) 2>/dev/null
+}
+_Msh_CAP_BUG_NOOCTAL() {
+case $((010)) in
+( 10 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_NOUNSETEX() {
+export _Msh_test
+case ${_Msh_test+s} in
+( s )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_OPTNOLOG() {
+(
+	set -o nolog
+	set -- "one $- two"
+	! str end "$1" " two"
+) 2>/dev/null || return 1
+}
+_Msh_CAP_BUG_PFRPAD() {
+thisshellhas printf || return 1
+case $(printf '%-4s' hi) in
+( '  hi' ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_01() {
+set --
+set -- ''"$@"
+case $# in
+( 0 )	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_02() {
+set --
+set -- ''$@
+case $# in
+( 0 )	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_03() {
+set -- one 'two three' four
+push IFS
+IFS=''
+_Msh_test=$*
+str eq "${_Msh_test}" 'one'
+pop --keepstatus IFS
+}
+_Msh_CAP_BUG_PP_03A() {
+set "  abc  " " def  ghi " "jkl "
+push IFS
+unset -v IFS
+_Msh_test=$*/$*
+pop IFS
+case ${_Msh_test} in
+( 'abc def ghi jkl / abc def ghi jkl' | \
+  '  abc   def  ghi jkl /  abc   def  ghi jkl ' )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_03B() {
+set "  abc  " " def  ghi " "jkl "
+push IFS
+unset -v IFS
+_Msh_test=${_Msh_test-$*}/${_Msh_test-$*}
+pop IFS
+case ${_Msh_test} in
+( 'abc def ghi jkl/abc def ghi jkl' )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_03C() {
+set -- one 'two three' four
+push IFS
+unset -v IFS
+_Msh_test=${_Msh_test-$*}
+str eq "${_Msh_test}" 'one'
+pop --keepstatus IFS
+}
+_Msh_CAP_BUG_PP_04() {
+set -- one 'two three' four
+push IFS
+IFS=''
+set -- ${_Msh_test:=$*}
+pop IFS
+str eq "${_Msh_test}" 'four' && ! str eq "$#" 1
+}
+_Msh_CAP_BUG_PP_04A() {
+set "  abc  " " def  ghi " "jkl "
+push IFS
+unset -v IFS
+: ${_Msh_test:=$*/$*/${_Msh_test-$*}/${_Msh_test-$*}}
+pop IFS
+case ${_Msh_test} in
+( 'abc def ghi jkl / abc def ghi jkl /abc def ghi jkl/abc def ghi jkl' )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_04D() {
+push IFS
+set -- " foo "
+unset -v IFS
+set -- ${_Msh_test:=$*}
+str eq "$#,${1-},${2-},${_Msh_test-}" "2,,foo, foo "
+pop --keepstatus IFS
+}
+_Msh_CAP_BUG_PP_04E() {
+set -- one "two three" four
+push IFS
+IFS=XYZ
+: ${_Msh_test:=$*}
+_Msh_test2=${_Msh_test}
+_Msh_test=
+IFS=
+: ${_Msh_test:=$*}
+_Msh_test=${_Msh_test2}/${_Msh_test}
+pop IFS
+unset -v _Msh_test2
+str eq "${_Msh_test}" "one two three four/onetwo threefour"
+}
+_Msh_CAP_BUG_PP_04_S() {
+set -- one 'two three' four
+push IFS
+IFS=
+set -- ${_Msh_test=$*}
+pop IFS
+str eq "${_Msh_test},${#},${1-},${2-}" "onetwo threefour,2,onetwo,threefour"
+}
+_Msh_CAP_BUG_PP_05() {
+set --
+push IFS
+IFS=
+set -- $@ $*
+pop IFS
+case $# in
+( 2 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_06() {
+set -- ab cdXef gh
+push IFS
+IFS='X'
+set -- $@ $*
+pop IFS
+case $#,${1-},${2-},${3-},${4-},${5-},${6-},${7-},${8-} in
+( 7,ab,cdXef,gh,ab,cd,ef,gh, )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_06A() {
+set -- ab 'cd ef' gh
+push IFS
+unset -v IFS
+set -- $@ $*
+pop IFS
+case $#,${1-},${2-},${3-},${4-},${5-},${6-},${7-},${8-} in
+( 6,ab,cd\ ef,gh,ab,cd\ ef,gh,, )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_07() {
+set -- ab 'cd ef' gh
+push IFS
+unset -v IFS
+set -- $* $@
+pop IFS
+case $#,${1-},${2-},${3-},${4-},${5-},${6-},${7-},${8-} in
+( "6,ab,cd ef,gh,ab,cd ef,gh,," ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_07A() {
+push IFS
+unset -v IFS
+set "a${CCn}b${CCt}c d"
+set $*
+pop IFS
+case $# in
+( 2 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_08() {
+set "abc" "def ghi" "jkl"
+push IFS
+IFS=
+set $@
+pop IFS
+case $#,${1-},${2-},${3-} in
+( "1,abcdef ghijkl,," ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_08B() {
+set "abc" "def ghi" "jkl"
+push IFS
+IFS=
+set ${1+$*}
+pop IFS
+case $#,${1-},${2-},${3-} in
+( "1,abcdef ghijkl,," ) ;;
+( "1,abc def ghi jkl,," ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_09() {
+set "abc" "def ghi" "jkl"
+push IFS
+IFS=X${CCt}${CCn}
+set ${1+$*}
+pop IFS
+case $#,${1-},${2-},${3-} in
+( "1,abc def ghi jkl,," ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_10() {
+push IFS
+IFS=
+set -- "$CC01$CC02$CC03$CC7F"
+_Msh_test=$*
+pop IFS
+case "${_Msh_test}" in
+( "$CC02$CC03" )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_10A() {
+push IFS
+IFS=' '
+set -- "$CC01$CC02$CC03$CC7F"
+_Msh_test=$*
+pop IFS
+case "${_Msh_test}" in
+( "$CC01$CC01$CC02$CC03$CC01$CC7F" )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_1ARG() {
+set -- "   \on\e" "\tw'o" " \th\'re\e" " \\'fo\u\r "
+push IFS
+IFS=''
+set -- ${1+"$@"}
+pop IFS
+case $# in
+( 1 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PP_MDIGIT() {
+set -- 1 2 3 4 5 6 7 8 9 ten
+case $10 in
+( ten )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBASNCC() {
+set -- ${_Msh_test=ab$CC01$CC02$CC7F}
+unset -v _Msh_test
+set -- "$@" "${_Msh_test=ab$CC01$CC02$CC7F}"
+str eq "${_Msh_test},$1,$2" "ab$CC01$CC02${CC7F},ab$CC02,ab$CC02$CC7F"
+}
+_Msh_CAP_BUG_PSUBBKSL1() {
+_Msh_test=somevalue
+case "${_Msh_test+\}}" in
+( '\}' ) ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBEMIFS() {
+_Msh_test=$CC01$CC02$CC03$CC7F
+set "abc" "def ghi" "$_Msh_test"
+push IFS
+IFS=
+set ${_Msh_test:+$*}
+pop IFS
+str eq "${#},${1}" "1,abcdef ghi$CC02$CC03"
+}
+_Msh_CAP_BUG_PSUBEMPT() {
+set --
+set -- ${1-}
+case $# in
+( 1 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBIFSNW() {
+_Msh_test="fooXoneXtwo"
+push IFS
+IFS=X
+set -- ${_Msh_test#foo}
+pop IFS
+case ${#},${1-},${2-},${3-},${4-} in
+( 4,,,one,two ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBIFSWH() {
+_Msh_test="foo one two"
+push IFS
+IFS=" "
+set -- ${_Msh_test#foo}
+pop IFS
+case ${#},${1-},${2-},${3-} in
+( 3,,one,two ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBNEWLN() {
+( eval ': ${$+
+}' ) 2>/dev/null && return 1 || return 0
+}
+_Msh_CAP_BUG_PSUBSQHD() {
+_Msh_test=notOK
+_Msh_test=$(command umask 077; PATH=$DEFPATH command cat <<-:
+	${_Msh_test#'not'}
+	:
+)
+case ${_Msh_test} in
+( "notOK" )
+	return 0 ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PSUBSQUOT() {
+_Msh_test=foobar
+case "${_Msh_test#'foo'}" in
+( bar )	return 1 ;;
+( foobar ) ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_PUTIOERR() {
+if thisshellhas --bi=print; then
+	set -- print -r --
+else
+	set -- printf '%s\n'
+fi
+
+_Msh_test=$(
+	{
+		(
+			PATH=$DEFPATH
+			command trap "" PIPE
+			_Msh_test=0
+			while let "(_Msh_test+=1) < 1000"; do
+				command "$@" xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx || exit
+			done
+			command "$@" BUG >&2
+		) | :
+	} 2>&1
+)
+
+case ${_Msh_test} in
+( BUG )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_READWHSP() {
+(
+command umask 077
+IFS=' ' read _Msh_test <<-EOF
+ab  cd  
+EOF
+case ${_Msh_test} in
+('ab  cd  ')	;;
+( * )		return 1 ;;
+esac
+)
+}
+_Msh_CAP_BUG_REDIRIO() {
+case $(PATH=$DEFPATH command echo hi <>/dev/null) in
+( '' )	return 0 ;;
+( hi )	return 1 ;;
+( * )	PATH=$DEFPATH command echo "BUG_REDIRIO: internal error" >&2
+	return 1 ;;
+esac >/dev/null
+}
+_Msh_CAP_BUG_REDIRPOS() {
+! (eval '_Msh_test=foo >/dev/null _Msh_test=bar' && str eq "${_Msh_test}" "bar") 2>/dev/null
+}
+_Msh_CAP_BUG_SCLOSEDFD() {
+{
+	{
+		{
+
+			exec 8</dev/null
+		} 8<&-
+
+		command : <&8 || return 1
+	} 8<&- 2>/dev/null
+} 8</dev/null
+}
+_Msh_CAP_BUG_SELECTEOF() {
+thisshellhas --rw=select || return 1
+
+case $(REPLY=bug; eval 'select _Msh_test in 1 2 3; do :; done'; echo "$REPLY") in
+( bug )	;;
+( '' )	return 1 ;;
+( * )	echo "BUG_SELECTEOF.t: Internal error" 1>&3
+	return 2 ;;
+esac </dev/null 3>&2 2>/dev/null
+}
+_Msh_CAP_BUG_SELECTRPL() {
+thisshellhas --rw=select || return 1
+
+echo ok | (case $(REPLY=newbug; eval 'select r in 1 2 3; do break; done'; echo "$REPLY") in
+( ok )	exit 1 ;;
+( '' )	;;
+( newbug )
+	exit 1 ;;
+( * )	echo "BUG_SELECTRPL.t: Internal error" 1>&3
+	exit 2 ;;
+esac 3>&2 2>/dev/null)
+}
+_Msh_CAP_BUG_SETOUTVAR() {
+_Msh_test=foo
+_Msh_testFn() {
+	set
+}
+
+case $(_Msh_testFn) in
+( '' )	unset -f _Msh_testFn ;;
+( * )	unset -f _Msh_testFn; return 1 ;;
+esac
+}
+_Msh_CAP_BUG_SHIFTERR0() {
+(
+	set -- 1 2 3
+	shift 4
+) 2>/dev/null || return 1
+}
+_Msh_CAP_BUG_SPCBILOC() {
+_Msh_testFn() {
+	_Msh_test=2 :
+	unset -v _Msh_test
+}
+_Msh_test=1
+_Msh_testFn
+unset -f _Msh_testFn
+case ${_Msh_test-} in
+( 1 )	unset -v _Msh_test ;;
+( * )	unset -v _Msh_test; return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TESTERR0() {
+PATH=$DEFPATH command test 123 -eq 1XX 2>/dev/null
+case $? in
+( 0 ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TESTERR1A() {
+PATH=$DEFPATH command test 123 -eq 1XX 2>/dev/null
+case $? in
+( 1 ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TESTERR1B() {
+PATH=$DEFPATH command test 123 -eq 2>/dev/null
+case $? in
+( 0 )
+	return 1 ;;
+( 1 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TESTILNUM() {
+{
+	PATH=$DEFPATH command test -t 12323454234578326584376438
+	PATH=$DEFPATH command test "$?" -gt 1
+} 2>| /dev/null
+case $? in
+( 0 | 1 ) return 1 ;;
+( * )     return 0 ;;
+esac
+}
+_Msh_CAP_BUG_TESTONEG() {
+thisshellhas --bi=test || return 1
+
+case $- in
+( *C* )	set +C
+	PATH=$DEFPATH command test -o noclobber
+	case $? in
+	( 0 ) set -C ;;
+	( * ) set -C; return 1 ;;
+	esac ;;
+( * )	PATH=$DEFPATH command test -o noclobber
+	case $? in
+	( 0 ) ;;
+	( * ) return 1 ;;
+	esac ;;
+esac 2>/dev/null
+}
+_Msh_CAP_BUG_TESTRMPAR() {
+PATH=$DEFPATH command test '(a' = ')b' 2>/dev/null || return 1
+}
+_Msh_CAP_BUG_TRAPEMPT() {
+case $(command trap '' CONT; command trap) in
+( "trap --  CONT" | "trap --  cont" )
+    ;;
+( * )
+    return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TRAPEXIT() {
+! (command trap - EXIT || ! command trap - 0) 2>/dev/null
+}
+_Msh_CAP_BUG_TRAPFNEXI() {
+case ${ZSH_VERSION-} in
+( 5.0.* ) return 0 ;;
+esac
+
+
+. "$MSH_AUX/cap/BUG_TRAPFNEXI.sh"
+
+case ${_Msh_test} in
+( trap${CCn}stillhere ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TRAPRETIR() {
+(command trap - RETURN) 2>/dev/null && thisshellhas -o functrace || return 1
+
+(
+	command set -o functrace && command trap '_Msh_testFn' RETURN || die "BUG_TRAPRETIR.t: internal error"
+	_Msh_test=0
+	_Msh_testFn() {
+		if let "(_Msh_test+=1) >= 4"; then
+			command trap - RETURN || die "BUG_TRAPRETIR.t: internal error"
+		fi
+		eval "return"
+	}
+	_Msh_testFn
+	let "_Msh_test >= 4"
+)
+}
+_Msh_CAP_BUG_TRAPSUB0() {
+(command trap 'readonly _Msh_test=foo; (_Msh_test=bar) 2>/dev/null && exit 13' 0)
+case $? in
+( 13 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_BUG_TRAPUNSRE() {
+{ _Msh_test=$(
+
+	insubshell -p
+
+	for _Msh_sig in ALRM HUP INT PIPE POLL PROF TERM USR1 USR2 VTALRM; do
+		command trap "\
+			putln trap
+			command trap - ${_Msh_sig}
+			command kill -s ${_Msh_sig} $REPLY
+			putln stillhere
+		" "${_Msh_sig}"
+		str begin "${ZSH_VERSION:-}" 5.0. && set -x
+		command kill -s "${_Msh_sig}" "$REPLY"
+	done
+); } 2>/dev/null
+
+case ${_Msh_test} in
+( trap${CCn}stillhere ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_BUG_UNSETUNXP() {
+export _Msh_test
+unset -v _Msh_test
+isset -x _Msh_test
+}
+_Msh_CAP_BUG_ZSHNAMES() {
+isset path || return 1
+
+(
+	PATH=/dev/null:/dev/null
+	path=_Msh_path_modifies_PATH
+	case $PATH in
+	( _Msh_path_modifies_PATH:/dev/null )
+		;;
+	( * )	\exit 1 ;;
+	esac
+) 2>/dev/null || return 1
+}
+_Msh_CAP_BUG_ZSHNAMES2() {
+isset histchars || return 1
+thisshellhas BUG_ZSHNAMES && return 1
+
+(
+	_Msh_test=$histchars
+	{ histchars=á; } 2>/dev/null
+	case $histchars in
+	( "${_Msh_test}" )
+		;;
+	( * )	exit 1 ;;
+	esac
+) || return 1
+}
+_Msh_CAP_CESCQUOT() {
+case $'a\40b' in
+( 'a b' ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_DBLBRACKET() {
+thisshellhas --rw=[[ || return 1
+
+(set -f
+eval '[[ '\
+'(abc == a?[bcd]*)'\
+'&&-o noglob'\
+'&&! / -nt /'\
+'&&! / -ot /'\
+"&&'a${CCn}b'<'a${CCn}bb'"\
+"&&(! 'a${CCn}bb'<'a${CCn}b')"\
+' ]]') 2>/dev/null || return 1
+
+_Msh_test=a\\*e
+! eval '[[ abcde == ${_Msh_test} ]]'
+}
+_Msh_CAP_DBLBRACKETERE() {
+thisshellhas DBLBRACKET || return 1
+
+{ (
+	_Msh_test='^(ONE [[:punct:][:alpha:]]{4,9} TWO[[:space:]]){2}$'
+	eval '[[ "ONE S@Me TWO${CCv}ONE t;hi,n.gs TWO${CCn}" =~ ${_Msh_test} ]]' || exit 1
+
+	case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
+	( *.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8 )
+		if ! thisshellhas WRN_MULTIBYTE; then
+
+
+			command ulimit -c 0
+			_Msh_test='^(ONÉ [[:punct:][:alpha:]]{4,9} TWÖ[[:space:]]){2}$'
+			eval '[[ "ONÉ S@Mé TWÖ${CCv}ONÉ t;hï,ñ.gs TWÖ${CCn}" =~ ${_Msh_test} ]]'
+		fi ;;
+	esac
+) || return 1; } 2>/dev/null
+}
+_Msh_CAP_DBLBRACKETV() {
+thisshellhas DBLBRACKET || return 1
+
+(eval '[[ '\
+'! -v _Msh_test '\
+'&&-n ${_Msh_test=foo}'\
+'&&-v _Msh_test'\
+' ]]') 2>/dev/null || return 1
+}
+_Msh_CAP_DOTARG() {
+set --
+if command . /dev/null one two 2>/dev/null; then
+
+	command . "$MSH_AUX/cap/DOTARG.sh" one two
+	return
+else
+
+	return 1
+fi
+}
+_Msh_CAP_HERESTR() {
+( eval ': <<<a' ) 2>/dev/null || return 1
+}
+_Msh_CAP_KSH88FUNC() {
+thisshellhas --rw=function --bi=typeset || return 1
+(eval 'function _Msh_testFn { :; }') 2>/dev/null || return 1
+
+eval '
+	function _Msh_testFn {
+		_Msh_test=${_Msh_test2}
+	}
+	function _Msh_testFn2 {
+		typeset _Msh_test2=local || return
+		_Msh_testFn
+	}' \
+&& _Msh_test2=global \
+&& _Msh_test='' \
+&& _Msh_testFn2 || return 2
+
+unset -v _Msh_test2
+unset -f _Msh_testFn _Msh_testFn2
+
+case ${_Msh_test} in
+( global )	return 1 ;;
+( local )	return 0 ;;
+( * )		return 2 ;;
+esac
+}
+_Msh_CAP_KSH93FUNC() {
+thisshellhas --rw=function --bi=typeset || return 1
+(eval 'function _Msh_testFn { :; }') 2>/dev/null || return 1
+
+eval '
+	function _Msh_testFn {
+		_Msh_test=${_Msh_test2}
+	}
+	function _Msh_testFn2 {
+		typeset _Msh_test2=local || return
+		_Msh_testFn
+	}' \
+&& _Msh_test2=global \
+&& _Msh_test='' \
+&& _Msh_testFn2 || return 2
+
+unset -v _Msh_test2
+unset -f _Msh_testFn _Msh_testFn2
+
+case ${_Msh_test} in
+( global )	return 0 ;;
+( local )	return 1 ;;
+( * )		return 2 ;;
+esac
+}
+_Msh_CAP_KSHARRAY() {
+( command eval '
+	_Msh_test=(one two three) &&
+	set -- "${_Msh_test}" &&
+	let "$# == 1" &&
+	str eq "${_Msh_test}" one &&
+	str eq "${_Msh_test[0]}" one &&
+	let "${#_Msh_test[@]}==3"'
+) 2>/dev/null || return 1
+}
+_Msh_CAP_LEPIPEMAIN() {
+: | _Msh_test=
+case ${_Msh_test+s} in
+( s )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_LINENO() {
+_Msh_test=${LINENO-}
+:
+case ${_Msh_test} in
+( "${LINENO-}" ) return 1 ;;
+esac
+#readonly LINENO
+}
+_Msh_CAP_LOCALVARS() {
+unset -f local
+PATH=/dev/null command -v local >/dev/null || return 1
+
+_Msh_testFn() {
+	local _Msh_test=LOCAL 2>/dev/null || return
+	case ${_Msh_test} in
+	( LOCAL ) ;;
+	( * ) return 1 ;;
+	esac
+}
+
+_Msh_test=GLOBAL
+_Msh_testFn || { unset -f _Msh_testFn; return 1; }
+unset -f _Msh_testFn
+case ${_Msh_test} in
+( GLOBAL ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_NONFORKSUBSH() {
+_Msh_test=$("$MSH_SHELL" -u -c 'echo $PPID' && ("$MSH_SHELL" -u -c 'echo $PPID'; :); :)
+case ${_Msh_test} in
+( *${CCn}* )
+
+	case "${_Msh_test%%${CCn}*}" in
+	( "${_Msh_test#*${CCn}}" ) ;;
+	( * )	return 1 ;;
+	esac ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_PRINTFV() {
+thisshellhas --bi=printf || return 1
+_Msh_test=
+command printf -v _Msh_test 'ok\n\n' >/dev/null 2>&1
+case ${_Msh_test} in
+( "ok$CCn$CCn" ) ;;
+( * ) return 1 ;;
+esac
+}
+_Msh_CAP_PROCREDIR() {
+(
+	command ulimit -t unlimited
+	command umask 777
+	eval 'IFS= read -r _Msh_test <(putln PROCREDIR)' \
+	&& str eq "${_Msh_test}" PROCREDIR
+) </dev/null 2>/dev/null || return 1
+}
+_Msh_CAP_PROCSUBST() {
+(
+	command ulimit -t unlimited
+	command umask 777
+	eval 'IFS= read -r _Msh_test < <(putln PROCSUBST)' \
+	&& str eq "${_Msh_test}" PROCSUBST
+) </dev/null 2>/dev/null || return 1
+}
+_Msh_CAP_PSREPLACE() {
+case $(	x=AB${CC01}${CCa}${CC7F}FGHIJAB${CC01}${CCa}${CC7F}FG a=${CC01}${CCa}${CC7F} b=QXY
+	eval 'y=${x/"$a"/"$b"}; z=${x//"$a"/"$b"}' &&
+	PATH=$DEFPATH command echo "$y,$z") in
+( ABQXYFGHIJAB${CC01}${CCa}${CC7F}FG,ABQXYFGHIJABQXYFG )
+	;;
+( * )	return 1 ;;
+esac 2>|/dev/null
+}
+_Msh_CAP_QRK_32BIT() {
+if ! ( : $((2147483650)) ) 2>/dev/null; then
+	return 0
+fi
+{ _Msh_test=$((2147483650)); } 2>/dev/null
+case ${_Msh_test} in
+( 2147483650 )	return 1 ;;
+( * )		return 0 ;;
+esac
+}
+_Msh_CAP_QRK_ANDORBG() {
+_Msh_test=QRK && : &
+
+case ${_Msh_test-} in
+( QRK )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_APIPEMAIN() {
+_Msh_test=QRK | :
+case ${_Msh_test-} in
+( QRK )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_ARITHEMPT() {
+_Msh_test=''
+(
+	case $((_Msh_test)) in
+	( '' )	;;
+	( * )	! : ;;
+	esac
+) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_ARITHWHSP() {
+case $(	_Msh_test="$CCt 1"
+	: $((_Msh_test)) || exit
+	put a1
+	_Msh_test="1$CCt "
+	: $((_Msh_test)) || exit
+	put a2
+) in
+( '' )	return 1 ;;
+(a1)	;;
+(a1a2)	return 1 ;;
+( * )	putln 'QRK_ARITHWHSP.t: internal error' 2>&3; return 2 ;;
+esac 3>&2 2>/dev/null
+}
+_Msh_CAP_QRK_BCDANGER() {
+_Msh_testFn() {
+	command break 2>/dev/null
+}
+
+for _Msh_test in 0 1; do
+	_Msh_testFn
+done
+unset -f _Msh_testFn
+return "${_Msh_test}"
+}
+_Msh_CAP_QRK_EMPTPPFLD() {
+set -- "one" "" "three"
+
+push IFS -f
+set -f
+unset -v IFS
+set -- $*
+pop IFS -f
+
+case $#,${1-},${2-},${3-} in
+( 3,one,,three )  return 0 ;;
+( 2,one,three, )  return 1 ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_EMPTPPWRD() {
+set --
+_Msh_test=''
+set -- "${_Msh_test}$@${_Msh_test}"
+case $# in
+( 0 )	return 0 ;;
+( 1 )	return 1 ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_EVALNOOPT() {
+_Msh_qrkEval_PATH=$PATH
+PATH=/dev/null
+if ! eval -- ':' 2>|/dev/null; then
+	PATH=${_Msh_qrkEval_PATH}
+	unset -v _Msh_qrkEval_PATH
+else
+	PATH=${_Msh_qrkEval_PATH}
+	unset -v _Msh_qrkEval_PATH
+	return 1
+fi
+}
+_Msh_CAP_QRK_EXECFNBI() {
+(
+	_Msh_QRK_EXECFNBI_test() {
+		exec :
+	}
+	PATH=/dev/null
+	MSH_NOT_FOUND_OK=y
+	exec _Msh_QRK_EXECFNBI_test
+) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_HDPARQUOT() {
+(
+command umask 077
+IFS= read -r _Msh_test <<EOF
+${_Msh_test-"word"}
+EOF
+case ${_Msh_test} in
+( \"word\" ) ;;
+( * )	return 1 ;;
+esac
+)
+}
+_Msh_CAP_QRK_IFSFINAL() {
+_Msh_test=one/two/
+push IFS
+IFS=/
+set -- ${_Msh_test}
+pop IFS
+case $# in
+( 3 )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_LOCALINH() {
+thisshellhas LOCALVARS || return
+_Msh_test=global
+_Msh_testFn() {
+	local _Msh_test
+	case ${_Msh_test+s},${_Msh_test-} in
+	( s,global ) ;;
+	( s, )	return 1 ;;
+	( , )	return 1 ;;
+	( * )	putln "QRK_LOCALINH.t: internal error"
+		return 2 ;;
+	esac
+}
+_Msh_testFn
+eval "unset -f _Msh_testFn; return $?"
+}
+_Msh_CAP_QRK_LOCALSET() {
+thisshellhas LOCALVARS || return
+_Msh_test2=set
+_Msh_testFn() {
+	local _Msh_test _Msh_test2
+	case ${_Msh_test+s1}${_Msh_test2+s2} in
+	(s1s2)	return 0 ;;
+	esac
+	return 1
+}
+_Msh_testFn
+case $?,${_Msh_test+s1},${_Msh_test2+s2} in
+(0,,s2)	unset -f _Msh_testFn; unset -v Msh_test2; return 0 ;;
+( * )	unset -f _Msh_testFn; unset -v Msh_test2; return 1 ;;
+esac
+}
+_Msh_CAP_QRK_LOCALSET2() {
+thisshellhas LOCALVARS || return
+_Msh_test2=set
+_Msh_testFn() {
+	local _Msh_test _Msh_test2
+	case ${_Msh_test+s1}${_Msh_test2+s2} in
+	(s1)	return 0 ;;
+	esac
+	return 1
+}
+_Msh_testFn
+case $?,${_Msh_test+s1},${_Msh_test2+s2} in
+(0,,s2)	unset -f _Msh_testFn; unset -v _Msh_test2; return 0 ;;
+( * )	unset -f _Msh_testFn; unset -v _Msh_test2; return 1 ;;
+esac
+}
+_Msh_CAP_QRK_LOCALUNS() {
+thisshellhas LOCALVARS || return
+_Msh_testFn() {
+	local _Msh_test
+	unset -v _Msh_test
+	_Msh_test=global
+}
+_Msh_testFn
+unset -f _Msh_testFn
+case ${_Msh_test+s},${_Msh_test-} in
+( s,global ) ;;
+( , )	return 1 ;;
+( * )
+	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_LOCALUNS2() {
+thisshellhas LOCALVARS || return
+
+thisshellhas QRK_LOCALUNS && return 1
+
+_Msh_testFn2() {
+	unset -v _Msh_test
+	case "${_Msh_test-U}" in
+	( 1 )	return 0 ;;
+	( U )	return 1 ;;
+	( 2 )
+		return 1 ;;
+	( * )	echo "QRK_LOCALUNS2: internal error"; return 2 ;;
+	esac
+}
+
+_Msh_testFn1() {
+	local _Msh_test
+	_Msh_test=2
+	_Msh_testFn2
+}
+
+_Msh_test=1
+_Msh_testFn1
+
+eval "unset -f _Msh_testFn1 _Msh_testFn2; return $?"
+}
+_Msh_CAP_QRK_OPTABBR() {
+(
+	set +o allexport \
+	&& set -o allexpor \
+	&& str in "$-" "a" \
+	&& set +o noclobber \
+	&& set -o noclobbe \
+	&& str in "$-" "C"
+) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_OPTCASE() {
+(set +o AllExPort +o NOUNSET +o xTrace) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_OPTDASH() {
+(set +o all--ex-port +o nou-nset +o x-trace) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_OPTNOPRFX() {
+(set +a; set +o noallexport; isset -a) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_OPTULINE() {
+(set +o all__ex_port +o nou_nset +o x_trace) 2>/dev/null || return 1
+}
+_Msh_CAP_QRK_PPIPEMAIN() {
+: ${_Msh_test=QRK} | :
+case ${_Msh_test-} in
+( QRK )	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_QRK_SPCBIXP() {
+_Msh_test=foo :
+isset -x _Msh_test
+}
+_Msh_CAP_QRK_UNSETF() {
+unset -v _Msh_test
+
+_Msh_test() {
+	:
+}
+
+unset _Msh_test
+
+if isset -f _Msh_test; then
+	unset -f _Msh_test
+	return 1
+else
+	return 0
+fi
+}
+_Msh_CAP_RANDOM() {
+case ${RANDOM-} in
+( '' )	return 1 ;;
+esac
+}
+_Msh_CAP_ROFUNC() {
+case $(
+	_Msh_roFn() { PATH=$DEFPATH command echo RO; }
+	readonly -f _Msh_roFn
+	_Msh_roFn() { :; }
+	_Msh_roFn
+) in
+( RO )	;;
+( * )	return 1 ;;
+esac 2>/dev/null
+}
+_Msh_CAP_TESTERE() {
+thisshellhas --bi=test || return 1
+
+_Msh_test='^(ONE [[:punct:][:alpha:]]{4,9} TWO[[:space:]]){2}$'
+PATH=$DEFPATH command test "ONE S@Me TWO${CCv}ONE t;hi,n.gs TWO${CCn}" "=~" "${_Msh_test}" 2>/dev/null || return 1
+
+case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
+( *.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8 )
+	if ! thisshellhas WRN_MULTIBYTE; then
+		_Msh_test='^(ONÉ [[:punct:][:alpha:]]{4,9} TWÖ[[:space:]]){2}$'
+		PATH=$DEFPATH command test "ONÉ S@Mé TWÖ${CCv}ONÉ t;hï,ñ.gs TWÖ${CCn}" "=~" "${_Msh_test}" 2>/dev/null || return 1
+	fi ;;
+esac
+}
+_Msh_CAP_TESTO() {
+thisshellhas [ || return 1
+
+thisshellhas BUG_TESTERR1B && return 1
+
+case $- in
+( *C* )	set +C
+	[ -o noclobber ]
+	case $? in
+	( 1 ) set -C ;;
+	( * ) set -C; return 1 ;;
+	esac ;;
+( * )	[ -o noclobber ]
+	case $? in
+	( 1 ) ;;
+	( * ) return 1 ;;
+	esac ;;
+esac 2>/dev/null
+}
+_Msh_CAP_TRAPPRSUBSH() {
+case $(	command trap ': TRAPPRSUBSH_Ks6UoNqP' 0
+	_Msh_testFn() {
+		command trap
+	}
+	put "$(_Msh_testFn)"
+     ) in
+( *': TRAPPRSUBSH_Ks6UoNqP'* )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_TRAPZERR() {
+case $(	command trap - ZERR ERR 2>/dev/null || exit
+	command trap - DEBUG 2>/dev/null
+	command trap ': one' ZERR
+	command trap
+	command trap - ERR
+	command trap
+     ) in
+( *${CCn}* )
+	return 1 ;;
+( *": one"?" ZERR" )
+	;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_WRN_EREMBYTE() {
+case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
+( *.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8 )
+	! str ematch "ONÉ S@Mé TWÖ${CCv}ONÉ t;hï,ñ.gs TWÖ${CCn}" \
+		'^(ONÉ [[:punct:][:alpha:]]{4,9} TWÖ[[:space:]]){2}$' ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_WRN_MULTIBYTE() {
+case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
+( *.[Uu][Tt][Ff]8 | *.[Uu][Tt][Ff]-8 )
+	_Msh_test='bèta'
+	case ${#_Msh_test} in
+	( 5 )	;;
+	( * )	return 1 ;;
+	esac ;;
+( * )	return 1 ;;
+esac
+}
+_Msh_CAP_WRN_NOSIGPIPE() {
+str isint "${SIGPIPESTATUS-}" || return 2
+return "$((SIGPIPESTATUS != 99999))"
+}
+_Msh_doCapTest() {
+	unset -v _Msh_test
+	PATH=/dev/null command -v "_Msh_CAP_$1" >/dev/null || return 1
+	"_Msh_CAP_$1" 1>&2
+	eval "unset -f _Msh_CAP_$1; return $?"
+}
+
+
+
+if isset BASH_VERSION && builtin shopt -s lastpipe 2>/dev/null
+then
+
+
+
+
+	_Msh_tSH_bashLEPIPEMAIN='case $1 in
+			( LEPIPEMAIN )
+				case $- in ( *m* ) return 1 ;; esac
+				builtin shopt -p lastpipe >/dev/null || return 1 ;;
+			esac'
+else
+	_Msh_tSH_bashLEPIPEMAIN=''
+fi
+
+if isset BASH_VERSION && builtin compgen -k
+then
+
+
+
+
+	readonly "_Msh_biCache=$(builtin compgen -b)" "_Msh_kwCache=$(builtin compgen -k)"
+	_Msh_tSH_testBI='case $CCn${_Msh_biCache}$CCn in
+			( *"$CCn${1#--bi=}$CCn"* ) ;;
+			( * )	return 1 ;;
+			esac'
+	_Msh_tSH_testKW='case $CCn${_Msh_kwCache}$CCn in
+			( *"$CCn${1#--[rk]w=}$CCn"* ) ;;
+			( * )	return 1 ;;
+			esac'
+elif isset BASH_VERSION && builtin type -t -a -- :
+then
+
+
+	_Msh_biCache=
+	_Msh_kwCache=
+	_Msh_tSH_testBI='case "${_Msh_biCache} " in
+			( *" ${1#--bi=} "* )	;;
+			( *" !${1#--bi=} "* )	return 1 ;;
+			( * )	PATH=/dev/null command -v -- "${1#--bi=}" >/dev/null \
+				&& case ${CCn}$(command type -t -a -- "${1#--bi=}")${CCn} in
+				( *${CCn}builtin${CCn}* )
+					_Msh_biCache="${_Msh_biCache} ${1#--bi=}"
+					continue ;;
+				esac
+				_Msh_biCache="${_Msh_biCache} !${1#--bi=}"
+				return 1 ;;
+			esac'
+	_Msh_tSH_testKW='case "${_Msh_kwCache} " in
+			( *" ${1#--[rk]w=} "* )	;;
+			( *" !${1#--[rk]w=} "* ) return 1 ;;
+			( * )	PATH=/dev/null command -v -- "${1#--[rk]w=}" >/dev/null \
+				&& case ${CCn}$(command type -t -a -- "${1#--[rk]w=}")${CCn} in
+				( *${CCn}keyword${CCn}* )
+					_Msh_kwCache="${_Msh_kwCache} ${1#--[rk]w=}"
+					continue ;;
+				esac
+				_Msh_kwCache="${_Msh_kwCache} !${1#--[rk]w=}"
+				return 1 ;;
+			esac'
+elif isset ZSH_VERSION && builtin enable -r
+then
+
+
+	readonly "_Msh_biCache=$(builtin enable readonly; builtin enable)" "_Msh_kwCache=$(builtin enable -r)"
+	_Msh_tSH_testBI='case $CCn${_Msh_biCache}$CCn in
+			( *"$CCn${1#--bi=}$CCn"* ) ;;
+			( * )	return 1 ;;
+			esac 2>/dev/null'
+	_Msh_tSH_testKW='case $CCn${_Msh_kwCache}$CCn in
+			( *"$CCn${1#--[rk]w=}$CCn"* ) ;;
+			( * )	return 1 ;;
+			esac 2>/dev/null'
+elif isset YASH_VERSION && {
+	PATH=$DEFPATH command test -o posix
+	case $? in
+	( 0 )	set +o posix; command -vkb if && set -o posix || ! set -o posix ;;
+	( 1 )	command -vkb if ;;
+	( * )	false ;;
+	esac
+}; then
+
+
+	_Msh_tSH_testBI='if PATH=$DEFPATH command test -o posix; then
+				set +o posix
+				command -vb -- "${1#--bi=}" || { set -o posix; return 1; }
+				set -o posix
+
+				command -v "${1#--bi=}" || return 1
+			else
+				command -vb -- "${1#--bi=}" || return 1
+			fi >/dev/null'
+	_Msh_tSH_testKW='if PATH=$DEFPATH command test -o posix; then
+				set +o posix
+				command -vk -- "${1#--[rk]w=}" || { set -o posix; return 1; }
+				set -o posix
+			else
+				command -vk -- "${1#--[rk]w=}" || return 1
+			fi >/dev/null'
+elif case "${KSH_VERSION-}" in
+	( 'Version '* | 2[0-9][0-9][0-9].* ) ;;
+	( * ) false ;;
+	esac
+then
+
+
+
+
+
+	readonly "_Msh_biCache=$(builtin)"
+	_Msh_kwCache=
+	_Msh_kwOutput=$(command -V 'while')
+	readonly "_Msh_kwOutput=${_Msh_kwOutput#*while}"
+	_Msh_tSH_testBI='case $CCn${_Msh_biCache}$CCn in
+			( *"$CCn${1#--bi=}$CCn"* ) ;;
+			( *"/${1#--bi=}$CCn"* )
+
+				_Msh_tSH_D=${_Msh_biCache}${CCn}
+				_Msh_tSH_D=${_Msh_tSH_D%%/${1#--bi=}${CCn}*}
+				_Msh_tSH_D=${_Msh_tSH_D##*${CCn}}
+				case :$PATH: in
+				( *":${_Msh_tSH_D}:"* | *":${_Msh_tSH_D}/:"* )
+					unset -v _Msh_tSH_D ;;
+				( * )	unset -v _Msh_tSH_D; return 1 ;;
+				esac ;;
+			( * )	return 1 ;;
+			esac'
+	_Msh_tSH_testKW='case "${_Msh_kwCache} " in
+			( *" ${1#--[rk]w=} "* ) ;;
+			( *" !${1#--[rk]w=} "* ) return 1 ;;
+			( * )	PATH=/dev/null command -v -- "${1#--[rk]w=}" >/dev/null \
+				&& case $(command -V -- "${1#--[rk]w=}" 2>/dev/null) in
+				( *"${_Msh_kwOutput}" )
+					_Msh_kwCache="${_Msh_kwCache} ${1#--[rk]w=}"
+					continue ;;
+				esac
+				_Msh_kwCache="${_Msh_kwCache} !${1#--[rk]w=}"
+				return 1 ;;
+			esac'
+else
+
+
+	_Msh_biCache=
+	_Msh_kwCache=
+
+	_Msh_kwOutput=$(command -V 'while')
+	readonly "_Msh_kwOutput=${_Msh_kwOutput#*while}"
+
+
+	_Msh_tSH_testBI='thisshellhas "--rw=${1#--bi=}" && return 1
+			case "${_Msh_biCache} " in
+			( *" ${1#--bi=} "* )	;;
+			( *" !${1#--bi=} "* )	return 1 ;;
+			( * )	PATH=/dev/null command -v -- "${1#--bi=}" >/dev/null \
+				&&    (	command unalias -- "${1#--bi=}"
+					unset -f -- "${1#--bi=}" || \exit 1
+					PATH=/dev/null
+					command -v -- "${1#--bi=}" ) >/dev/null 2>&1 \
+				&& _Msh_biCache="${_Msh_biCache} ${1#--bi=}" \
+				&& continue
+				_Msh_biCache="${_Msh_biCache} !${1#--bi=}"
+				return 1 ;;
+			esac'
+	_Msh_tSH_testKW='case "${_Msh_kwCache} " in
+			( *" ${1#--[rk]w=} "* )	;;
+			( *" !${1#--[rk]w=} "* ) return 1 ;;
+			( * )	PATH=/dev/null command -V -- "${1#--[rk]w=}" >/dev/null 2>&1 \
+				&& case $(command -V -- "${1#--[rk]w=}" 2>/dev/null) in
+				( *"${_Msh_kwOutput}" )
+					_Msh_kwCache="${_Msh_kwCache} ${1#--[rk]w=}"
+					continue ;;
+				esac
+				_Msh_kwCache="${_Msh_kwCache} !${1#--[rk]w=}"
+				return 1 ;;
+			esac'
+fi >/dev/null 2>&1
+
+
+_Msh_optCache=
+eval 'thisshellhas() {
+	case ${#},${-} in
+	( 0,* )	die "thisshellhas: need at least 1 argument, got $#" ;;
+	( *a* )	set +a; thisshellhas "$@"; eval "set -a; return $?" ;;
+	esac
+	while case $# in (0) break;; esac; do
+		case $1 in
+		( --cache | --show )
+			putln "thisshellhas: warning: $1 does nothing on bundled modernish versions" >&2
+			;;
+		( "" | --bi= | --[rk]w= | --bi=*/* | --[rk]w=*/* \
+		| --bi=*[!\[\]\!{}"$SHELLSAFECHARS"]* \
+		| --[rk]w=*[!\[\]\!{}"$SHELLSAFECHARS"]* \
+		| --sig=*[!"$SHELLSAFECHARS"]* )
+			return 2
+			;;
+		( --bi=* )
+			'"${_Msh_tSH_testBI}"'
+			;;
+		( --[rk]w=* )
+			'"${_Msh_tSH_testKW}"'
+			;;
+		( --sig=* )
+			use _IN/sig
+			if _Msh_arg2sig "${1#--sig=}"; then
+				REPLY=${_Msh_sig}
+				unset -v _Msh_sig _Msh_sigv
+			else
+				unset -v _Msh_sig REPLY
+				return 1
+			fi ;;
+		( --* )	die "thisshellhas: invalid option: ${1%%=*}"
+			;;
+		( -o )	let "$# >= 2" || die "thisshellhas: -o: long-form option name expected"
+			use _IN/opt
+			_Msh_optNamCanon "$2" || eval "unset -v _Msh_opt; return $?"
+			unset -v _Msh_opt
+			shift ;;
+		( -[aCefmnuvx] )
+			;;
+		( -["$ASCIIALNUM"] )
+			case " ${_Msh_optCache} " in
+			( *" $1 "* )	;;
+			( *" !$1 "* )	return 1 ;;
+			( * )	if isset "$1" || (set "+${1#-}") 2>/dev/null; then
+					_Msh_optCache=${_Msh_optCache:+${_Msh_optCache} }$1
+				else
+					_Msh_optCache=${_Msh_optCache:+${_Msh_optCache} }!$1
+					return 1
+				fi ;;
+			esac ;;
+		( -* )	return 2 ;;
+		( *[!ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]* )
+			thisshellhas "--bi=$1" || thisshellhas "--rw=$1" || return
+			;;
+		( * )	'"${_Msh_tSH_bashLEPIPEMAIN}"'
+			case "$CCn${_Msh_cap}$CCn" in
+			( *"$CCn$1$CCn"* ) ;;
+			( *"$CCn!$1$CCn"* ) return 1 ;;
+			( * )	_Msh_doCapTest "$1"
+				case $? in
+				( 0 )	_Msh_cap=${_Msh_cap:+${_Msh_cap}$CCn}$1
+					unset -v _Msh_test ;;
+				( 1 )	_Msh_cap=${_Msh_cap:+${_Msh_cap}$CCn}!$1
+					unset -v _Msh_test
+					return 1 ;;
+				( * )	die "thisshellhas(): failure while testing for $1" ;;
+				esac ;;
+			esac
+			;;
+		esac
+		shift
+	done
+}'"${CCn}" || _Msh_initExit "thisshellhas() definition: 'eval' failed"
+unset -v _Msh_tSH_testBI _Msh_tSH_testKW _Msh_tSH_bashLEPIPEMAIN
+
+
+_Msh_inSbSh_g0='_Msh_inSbSh_P=$(PATH=$DEFPATH exec "$MSH_SHELL" -u -c "echo \$PPID")'
+_Msh_inSbSh_g1='case ${1-},${_Msh_inSbSh_P} in
+	( *, | *,*[!0123456789]* )
+		putln "${ME##*/}: insubshell: internal error: cannot determine parent PID" 1>&2
+		isset _Msh_die_isrunning && REPLY=$$ && return 0 || die ;;'
+_Msh_inSbSh_g2='
+	(,$$)	unset -v _Msh_inSbSh_P; return 1 ;;
+	(*,$$)	REPLY=$$; unset -v _Msh_inSbSh_P; return 1 ;;
+	(,*)	unset -v _Msh_inSbSh_P; return 0 ;;
+	(*,*)	REPLY=${_Msh_inSbSh_P}; unset -v _Msh_inSbSh_P; return 0 ;;
+	esac'
+if isset BASHPID && _Msh_test=$BASHPID &&
+	case $(PATH=$DEFPATH; trap 'echo "$((BASHPID != _Msh_test))"' EXIT; echo "$((BASHPID != _Msh_test))") in
+	("1${CCn}1")	;;
+	( * )		! unset -v BASHPID && _Msh_initExit "can't unset non-working BASHPID!" ;;
+	esac
+then
+
+	_Msh_inSbSh_method='case $# in ( 1 ) return "$(((REPLY = BASHPID) == $$))" ;; esac
+		return "$((BASHPID == $$))"'
+elif isset ZSH_VERSION && isset ZSH_SUBSHELL && _Msh_test=$ZSH_SUBSHELL &&
+	case $(PATH=$DEFPATH; trap 'echo "$((ZSH_SUBSHELL != _Msh_test))"' EXIT; echo "$((ZSH_SUBSHELL != _Msh_test))") in
+	("1${CCn}1")	;;
+	( * )		! unset -v ZSH_SUBSHELL && _Msh_initExit "can't unset non-working ZSH_SUBSHELL!" ;;
+	esac
+then
+	_Msh_inSbSh_method='case ${1-},${ZSH_SUBSHELL} in
+		(,0)	return 1 ;;
+		(,*)	return 0 ;;
+		(-p,0)	REPLY=$$; return 1 ;;
+		(-u,*)	return "$((!(REPLY = ZSH_SUBSHELL)))" ;;
+		esac
+		'"${_Msh_inSbSh_g0}"'
+		'"${_Msh_inSbSh_g1}"'
+		esac
+		REPLY=${_Msh_inSbSh_P}; unset -v _Msh_inSbSh_P'
+elif case ${KSH_VERSION-} in ( Version* | 2[0-9][0-9][0-9].* ) ;; ( * ) ! : ;; esac; then
+
+
+
+
+
+
+	_Msh_inSbSh_method='
+		if ((.sh.subshell > 0)); then
+			command ulimit -t unlimited 2>/dev/null
+			(($# == 0)) && return 0
+		fi
+		'"{ ${_Msh_inSbSh_g0}; } 2>/dev/null
+		${_Msh_inSbSh_g1}
+		${_Msh_inSbSh_g2}"
+else
+	_Msh_inSbSh_method="${_Msh_inSbSh_g0}
+		${_Msh_inSbSh_g1}
+		${_Msh_inSbSh_g2}"
+fi
+eval 'insubshell() {
+	case ${#},${1-} in
+	( 1,-p | 1,-u )  ;;
+	( [!0]* ) die "insubshell: invalid arguments: $@" ;;
+	esac
+	'"${_Msh_inSbSh_method}"'
+}'
+unset -v _Msh_inSbSh_g0 _Msh_inSbSh_g1 _Msh_inSbSh_g2 _Msh_inSbSh_method
+
+readonly BASHPID ZSH_SUBSHELL
+
+
+if thisshellhas BUG_IFSISSET; then
+	_Msh_isset_BUG_IFSISSET='( 1,IFS, | 2,-v,IFS )
+		case ${IFS:+n} in
+		( "" )	set -- "a b"
+			set -- $1
+			let "$# == 1"
+		esac ;;'
+else
+	_Msh_isset_BUG_IFSISSET=
+fi
+if thisshellhas DBLBRACKET; then
+	if thisshellhas DBLBRACKETV; then
+		_Msh_isset='[[ -v $1 ]]'
+		_Msh_isset_v='[[ -v $2 ]]'
+	else
+		_Msh_isset='eval "[[ -n \${$1+s} ]]"'
+		_Msh_isset_v='eval "[[ -n \${$2+s} ]]"'
+	fi
+else
+
+	_Msh_isset='eval "case \${$1+s} in ( '\'''\'' ) return 1 ;; esac"'
+	_Msh_isset_v='eval "case \${$2+s} in ( '\'''\'' ) return 1 ;; esac"'
+fi
+if isset ZSH_VERSION && ( eval ': ${(t)PATH}' ) 2>/dev/null; then
+
+
+
+	#
+
+
+
+
+
+	_Msh_isset_x='case ${(P)2+s} in
+		( s )	str in "-${(Pt)2}-" -export- ;;
+		( * )	str in "$(export -p)$CCn" " $2$CCn" ;;
+		esac'
+	_Msh_isset_r='case ${(P)2+s} in
+		( s )	str in "-${(Pt)2}-" -readonly- ;;
+		( * )	! ( eval "$2=" ) 2>/dev/null ;;
+		esac'
+elif ! thisshellhas --rw=export; then
+
+
+
+
+
+
+	_Msh_isset_x='unset -v _Msh_issetEx_WasRun _Msh_issetEx_FoundIt
+		export "_Msh_issetExV=$2"
+		command alias export=_Msh_issetExHandleExport
+		eval "$(command export -p)"
+		command unalias export
+		unset -v _Msh_issetExV
+		isset _Msh_issetEx_WasRun && unset -v _Msh_issetEx_WasRun ||
+			die "isset -x: internal error: '\''export -p'\'' not parseable or '\''export'\'' not aliasable"
+		isset _Msh_issetEx_FoundIt && unset -v _Msh_issetEx_FoundIt'
+	_Msh_issetExHandleExport() {
+		_Msh_issetEx_WasRun=''
+		case ${1%%=*} in
+		("${_Msh_issetExV}") _Msh_issetEx_FoundIt='' ;;
+		esac
+	}
+
+	_Msh_isset_r='! ( command unset -v "$2" || \exit 1 ) 2>/dev/null'
+else
+	_Msh_initExit "init: isset -x: Can't determine method to test if a var. is exported." \
+		"This shell has 'export' as a reserved word, but modernish was only" \
+		"programmed to handle this on zsh. Please report this as a bug in modernish."
+fi
+if thisshellhas --bi=typeset &&
+	command typeset -f isset >/dev/null 2>&1 &&
+	! command typeset -f _Msh_nonExistentFunction >/dev/null 2>&1
+then
+
+
+	_Msh_isset_f='command typeset -f "$2" >/dev/null 2>&1'
+else
+
+	_Msh_fnOutput=$(command -V 'isset') || _Msh_initExit 'internal error (_Msh_fnOutput)'
+	readonly "_Msh_fnOutput=${_Msh_fnOutput#*isset}"
+	_Msh_isset_f='PATH=/dev/null command -v "$2" >/dev/null || return 1
+		case $(command unalias "$2" 2>/dev/null; PATH=/dev/null command -V "$2") in
+		( *"${_Msh_fnOutput}" )
+			;;
+		( * )	return 1 ;;
+		esac'
+fi
+if thisshellhas DBLBRACKET; then
+	if isset ZSH_VERSION && eval '{ [[ -o invalid@option ]] 2>/dev/null; } always { TRY_BLOCK_ERROR=0; }; [[ $? -gt 1 ]]'; then
+
+
+		_Msh_isset_o='( 2,-o,* ) { [[ -o $2 ]] 2>/dev/null; } always { TRY_BLOCK_ERROR=0; } || return 1'
+	else
+		_Msh_isset_o='( 2,-o,* ) [[ -o $2 ]]'
+	fi
+elif thisshellhas TESTO; then
+	_Msh_isset_o='( 2,-o,* ) test -o "$2"'
+else
+
+
+
+
+	_Msh_isset_o='( 2,-o,allexport )	isset -a ;;
+	( 2,-o,interactive )	isset -i ;;
+	( 2,-o,monitor )	isset -m ;;
+	( 2,-o,noclobber )	isset -C ;;
+	( 2,-o,noglob )		isset -f ;;
+	( 2,-o,notify )		isset -b ;;
+	( 2,-o,nounset )	isset -u ;;
+	( 2,-o,verbose )	isset -v ;;
+	( 2,-o,xtrace )		isset -x ;;
+	( 2,-o,* ) thisshellhas -o "$2" || return
+		{ _Msh_isset_o=$(PATH=$DEFPATH
+				set -o
+				command echo @_SEP_@
+				set +o "$2"
+				set -o
+				command echo X)
+		} 2>/dev/null \
+		&& ! str eq "${_Msh_isset_o%@_SEP_@$CCn*}X" "${_Msh_isset_o#*@_SEP_@$CCn}" \
+		&& unset -v _Msh_isset_o \
+		|| ! unset -v _Msh_isset_o'
+fi
+eval 'isset() {
+	case ${#},${1-},${2-} in
+	( 1,-o, )  die "isset -o: long-form option name expected" ;;
+	( 1,-["$ASCIIALNUM"], )
+		   case $- in ( *"${1#-}"* ) ;; ( * ) return 1 ;; esac ;;
+	( 1,, | 1,[0123456789]* | 1,*[!"$ASCIIALNUM"_]*, \
+	| 2,-[vxrf], | 2,-[vxrf],[0123456789]* | 2,-[vxrf],*[!"$ASCIIALNUM"_]* \
+	| 2,-o, | 2,-o,*[!"$ASCIIALNUM"_-]* )
+		   return 2 ;;
+	'"${_Msh_isset_BUG_IFSISSET}"'
+	( 1,* )    '"${_Msh_isset}"' ;;
+	( 2,-v,* ) '"${_Msh_isset_v}"' ;;
+	( 2,-x,* ) '"${_Msh_isset_x}"' ;;
+	( 2,-r,* ) '"${_Msh_isset_r}"' ;;
+	( 2,-f,* ) '"${_Msh_isset_f}"' ;;
+	'"${_Msh_isset_o}"' ;;
+	( 2,-* )   die "isset: invalid option: $1" ;;
+	( * )	   die "isset: invalid arguments" ;;
+	esac
+}'"$CCn"
+unset -v _Msh_isset_BUG_IFSISSET _Msh_isset _Msh_isset_v _Msh_isset_x _Msh_isset_r _Msh_isset_f _Msh_isset_o
+
+
+
+if thisshellhas ADDASSIGN; then
+	_Msh_qV_sngQuote_do1fld() {
+
+
+		case ${_Msh_qV_f},${_Msh_qV_C} in
+		( , | f, )
+			_Msh_qV+=\\\' ;;
+		( ,[!$CCn$SHELLSAFECHARS]* )
+
+
+			case ${_Msh_qV_C#?} in
+			( *[!$SHELLSAFECHARS]* )
+				_Msh_qV+=\'${_Msh_qV_C}\'\\\' ;;
+			( * )	_Msh_qV+=\\${_Msh_qV_C}\\\' ;;
+			esac ;;
+		( ,*[!$SHELLSAFECHARS]* | f,* )
+
+			_Msh_qV+=\'${_Msh_qV_C}\'\\\' ;;
+		( * )
+			_Msh_qV+=${_Msh_qV_C}\\\' ;;
+		esac
+	}
+else
+	_Msh_qV_sngQuote_do1fld() {
+
+
+		case ${_Msh_qV_f},${_Msh_qV_C} in
+		( , | f, )
+			_Msh_qV=${_Msh_qV}\\\' ;;
+		( ,[!$CCn$SHELLSAFECHARS]* )
+
+
+			case ${_Msh_qV_C#?} in
+			( *[!$SHELLSAFECHARS]* )
+				_Msh_qV=${_Msh_qV}\'${_Msh_qV_C}\'\\\' ;;
+			( * )	_Msh_qV=${_Msh_qV}\\${_Msh_qV_C}\\\' ;;
+			esac ;;
+		( ,*[!$SHELLSAFECHARS]* | f,* )
+
+			_Msh_qV=${_Msh_qV}\'${_Msh_qV_C}\'\\\' ;;
+		( * )
+			_Msh_qV=${_Msh_qV}${_Msh_qV_C}\\\' ;;
+		esac
+	}
+fi
+
+_Msh_qV_sngQuote() {
+
+	case ${_Msh_qV_VAL} in
+	( *\' )
+		thisshellhas QRK_IFSFINAL || _Msh_qV_VAL=${_Msh_qV_VAL}\' ;;
+	esac
+	_Msh_qV=
+	push IFS -f; set -f
+	IFS="'"; for _Msh_qV_C in ${_Msh_qV_VAL}; do IFS=
+
+		_Msh_qV_sngQuote_do1fld
+	done
+	pop IFS -f
+
+	_Msh_qV_VAL=${_Msh_qV%\\\'}
+}
+
+if thisshellhas PSREPLACE; then
+	eval '_Msh_qV_dblQuote() {
+		_Msh_qV=${_Msh_qV_VAL//\\/\\\\}
+		_Msh_qV=${_Msh_qV//\$/\\\$}
+		_Msh_qV=${_Msh_qV//\`/\\\`}
+		case ${_Msh_qV_P},${_Msh_qV} in
+		( P,* )
+			;;
+		( *[$CONTROLCHARS]* )
+			_Msh_qV=${_Msh_qV//$CC01/'\''${CC01}'\''}
+			_Msh_qV=${_Msh_qV//$CC02/'\''${CC02}'\''}
+			_Msh_qV=${_Msh_qV//$CC03/'\''${CC03}'\''}
+			_Msh_qV=${_Msh_qV//$CC04/'\''${CC04}'\''}
+			_Msh_qV=${_Msh_qV//$CC05/'\''${CC05}'\''}
+			_Msh_qV=${_Msh_qV//$CC06/'\''${CC06}'\''}
+			_Msh_qV=${_Msh_qV//$CC07/'\''${CCa}'\''}
+			_Msh_qV=${_Msh_qV//$CC08/'\''${CCb}'\''}
+			_Msh_qV=${_Msh_qV//$CC09/'\''${CCt}'\''}
+			_Msh_qV=${_Msh_qV//$CC0A/'\''${CCn}'\''}
+			_Msh_qV=${_Msh_qV//$CC0B/'\''${CCv}'\''}
+			_Msh_qV=${_Msh_qV//$CC0C/'\''${CCf}'\''}
+			_Msh_qV=${_Msh_qV//$CC0D/'\''${CCr}'\''}
+			_Msh_qV=${_Msh_qV//$CC0E/'\''${CC0E}'\''}
+			_Msh_qV=${_Msh_qV//$CC0F/'\''${CC0F}'\''}
+			_Msh_qV=${_Msh_qV//$CC10/'\''${CC10}'\''}
+			_Msh_qV=${_Msh_qV//$CC11/'\''${CC11}'\''}
+			_Msh_qV=${_Msh_qV//$CC12/'\''${CC12}'\''}
+			_Msh_qV=${_Msh_qV//$CC13/'\''${CC13}'\''}
+			_Msh_qV=${_Msh_qV//$CC14/'\''${CC14}'\''}
+			_Msh_qV=${_Msh_qV//$CC15/'\''${CC15}'\''}
+			_Msh_qV=${_Msh_qV//$CC16/'\''${CC16}'\''}
+			_Msh_qV=${_Msh_qV//$CC17/'\''${CC17}'\''}
+			_Msh_qV=${_Msh_qV//$CC18/'\''${CC18}'\''}
+			_Msh_qV=${_Msh_qV//$CC19/'\''${CC19}'\''}
+			_Msh_qV=${_Msh_qV//$CC1A/'\''${CC1A}'\''}
+			_Msh_qV=${_Msh_qV//$CC1B/'\''${CCe}'\''}
+			_Msh_qV=${_Msh_qV//$CC1C/'\''${CC1C}'\''}
+			_Msh_qV=${_Msh_qV//$CC1D/'\''${CC1D}'\''}
+			_Msh_qV=${_Msh_qV//$CC1E/'\''${CC1E}'\''}
+			_Msh_qV=${_Msh_qV//$CC1F/'\''${CC1F}'\''}
+			_Msh_qV=${_Msh_qV//$CC7F/'\''${CC7F}'\''} ;;
+		esac
+		_Msh_qV_VAL=\"${_Msh_qV//\"/\\\"}\"
+	}'
+else
+
+
+	_Msh_qV_R() {
+		case ${_Msh_qV} in
+		( *"$1"* )
+			_Msh_qV_VAL=
+			while case ${_Msh_qV} in ( *"$1"* ) ;; ( * ) ! : ;; esac; do
+				_Msh_qV_VAL=${_Msh_qV_VAL}${_Msh_qV%%"$1"*}$2
+				_Msh_qV=${_Msh_qV#*"$1"}
+			done
+			_Msh_qV=${_Msh_qV_VAL}${_Msh_qV} ;;
+		esac
+	}
+	_Msh_qV_dblQuote() {
+		_Msh_qV=${_Msh_qV_VAL}
+		_Msh_qV_R \\ \\\\
+		_Msh_qV_R \" \\\"
+		_Msh_qV_R \$ \\\$
+		_Msh_qV_R \` \\\`
+		case ${_Msh_qV_P},${_Msh_qV} in
+		( P,* )
+			;;
+		( *[$CONTROLCHARS]* )
+			_Msh_qV_R "$CC01" \${CC01}
+			_Msh_qV_R "$CC02" \${CC02}
+			_Msh_qV_R "$CC03" \${CC03}
+			_Msh_qV_R "$CC04" \${CC04}
+			_Msh_qV_R "$CC05" \${CC05}
+			_Msh_qV_R "$CC06" \${CC06}
+			_Msh_qV_R "$CC07" \${CCa}
+			_Msh_qV_R "$CC08" \${CCb}
+			_Msh_qV_R "$CC09" \${CCt}
+			_Msh_qV_R "$CC0A" \${CCn}
+			_Msh_qV_R "$CC0B" \${CCv}
+			_Msh_qV_R "$CC0C" \${CCf}
+			_Msh_qV_R "$CC0D" \${CCr}
+			_Msh_qV_R "$CC0E" \${CC0E}
+			_Msh_qV_R "$CC0F" \${CC0F}
+			_Msh_qV_R "$CC10" \${CC10}
+			_Msh_qV_R "$CC11" \${CC11}
+			_Msh_qV_R "$CC12" \${CC12}
+			_Msh_qV_R "$CC13" \${CC13}
+			_Msh_qV_R "$CC14" \${CC14}
+			_Msh_qV_R "$CC15" \${CC15}
+			_Msh_qV_R "$CC16" \${CC16}
+			_Msh_qV_R "$CC17" \${CC17}
+			_Msh_qV_R "$CC18" \${CC18}
+			_Msh_qV_R "$CC19" \${CC19}
+			_Msh_qV_R "$CC1A" \${CC1A}
+			_Msh_qV_R "$CC1B" \${CCe}
+			_Msh_qV_R "$CC1C" \${CC1C}
+			_Msh_qV_R "$CC1D" \${CC1D}
+			_Msh_qV_R "$CC1E" \${CC1E}
+			_Msh_qV_R "$CC1F" \${CC1F}
+			_Msh_qV_R "$CC7F" \${CC7F} ;;
+		esac
+		_Msh_qV_VAL=\"${_Msh_qV}\"
+	}
+fi
+
+shellquote() {
+	_Msh_qV_ERR=4
+	_Msh_qV_f=
+	_Msh_qV_P=
+	for _Msh_qV_N do
+		case ${_Msh_qV_N} in
+		([+-]*)	_Msh_qV_ERR=4
+			case ${_Msh_qV_N} in
+			( -f )		_Msh_qV_f=f ;;
+			( +f )		_Msh_qV_f= ;;
+			( -P )		_Msh_qV_P=P ;;
+			( +P )		_Msh_qV_P= ;;
+			( -fP | -Pf )	_Msh_qV_f=f; _Msh_qV_P=P ;;
+			( +fP | +Pf )	_Msh_qV_f=; _Msh_qV_P= ;;
+			( * )		_Msh_qV_ERR=3; break ;;
+			esac
+			continue ;;
+		( *=* )
+			_Msh_qV_VAL=${_Msh_qV_N#*=}
+			_Msh_qV_N=${_Msh_qV_N%%=*}
+			case ${_Msh_qV_N} in
+			( "" | [0123456789]* | *[!"$ASCIIALNUM"_]* )
+				_Msh_qV_ERR=2
+				break ;;
+			esac ;;
+		( "" | [0123456789]* | *[!"$ASCIIALNUM"_]* )
+			_Msh_qV_ERR=2
+			break ;;
+		( * )	! isset "${_Msh_qV_N}" && _Msh_qV_ERR=1 && break
+			eval "_Msh_qV_VAL=\${${_Msh_qV_N}}" ;;
+		esac
+		_Msh_qV_ERR=0
+
+
+		case ${_Msh_qV_VAL} in
+		( '' )	eval "${_Msh_qV_N}=\'\'"
+			continue ;;
+		esac
+
+
+
+
+		case ${_Msh_qV_f:+" "}${_Msh_qV_VAL} in
+
+		( '[' | ']' | '[[' | ']]' | '{' | '}' | '{}' )
+
+
+			;;
+
+		( [!$CONTROLCHARS$SHELLSAFECHARS] )
+
+			_Msh_qV_VAL=\\${_Msh_qV_VAL} ;;
+
+		( \\[!$CONTROLCHARS$SHELLSAFECHARS] )
+
+			_Msh_qV_VAL=\\\\${_Msh_qV_VAL} ;;
+
+		( *[!$SHELLSAFECHARS]* )
+
+			case ${_Msh_qV_P},${_Msh_qV_VAL} in
+			( ,*[$CONTROLCHARS]* )
+
+				_Msh_qV_dblQuote ;;
+			( *\'* )
+				case ${_Msh_qV_VAL} in
+				( *[\"\$\`\\]* )
+
+					_Msh_qV_VAL_save=${_Msh_qV_VAL}
+					_Msh_qV_dblQuote
+					_Msh_qV_VAL2=${_Msh_qV_VAL}
+					_Msh_qV_VAL=${_Msh_qV_VAL_save}
+					_Msh_qV_sngQuote
+					let "${#_Msh_qV_VAL2} < ${#_Msh_qV_VAL}" && _Msh_qV_VAL=${_Msh_qV_VAL2}
+					unset -v _Msh_qV_VAL2 _Msh_qV_VAL_save ;;
+				( * )
+					_Msh_qV_VAL=\"${_Msh_qV_VAL}\" ;;
+				esac ;;
+			( * )
+				_Msh_qV_VAL=\'${_Msh_qV_VAL}\' ;;
+			esac ;;
+		esac
+
+		eval "${_Msh_qV_N}=\${_Msh_qV_VAL}"
+	done
+
+	case ${_Msh_qV_ERR} in
+	( 0 )	unset -v _Msh_qV _Msh_qV_C _Msh_qV_VAL _Msh_qV_f _Msh_qV_P _Msh_qV_N _Msh_qV_ERR ;;
+	( 1 )	die "shellquote: unset variable: ${_Msh_qV_N}" ;;
+	( 2 )	die "shellquote: invalid variable name: ${_Msh_qV_N}" ;;
+	( 3 )	die "shellquote: invalid option: ${_Msh_qV_N}" ;;
+	( 4 )	die "shellquote: expected variable(s) to quote" ;;
+	( * )	die "shellquote: internal error (${_Msh_qV_ERR})" ;;
+	esac
+}
+
+alias shellquoteparams='{ _Msh_qV_PP "$@" && eval "set -- ${_Msh_QP}" && unset -v _Msh_QP; }'
+_Msh_qV_PP() {
+	unset -v _Msh_QP
+	for _Msh_Q do
+		shellquote _Msh_Q _Msh_Q
+		_Msh_QP=${_Msh_QP-}\ ${_Msh_Q}
+	done
+	unset -v _Msh_Q
+	isset _Msh_QP
+}
+
+
+
+push() {
+
+	unset -v _Msh_push_key
+	while	case ${1-} in
+		( -- )		shift; break ;;
+		( --key=* )	_Msh_push_key=${1#--key=} ;;
+		( --* )		die "push: invalid option: $1" ;;
+		( * )		break ;;
+		esac
+	do
+		shift
+	done
+	case $# in
+	( 0 )	die "push: needs at least 1 non-option argument" ;;
+	esac
+
+
+
+	case $- in
+	( *a* )	set +a; _Msh_push_opta=y ;;
+	( * )	unset -v _Msh_push_opta ;;
+	esac
+
+
+	_Msh_push_err=0
+	unset -v _Msh_push_o
+	for _Msh_push_V do
+		case ${_Msh_push_o-} in
+		( y )	unset -v _Msh_push_o
+			case ${_Msh_push_V} in
+			( "" | *[!"$ASCIIALNUM"_-]* )
+				_Msh_push_err=101
+				break ;;
+			esac ;;
+		( * )	case ${_Msh_push_V} in
+			( -o )	_Msh_push_o=y
+				use _IN/opt
+				continue ;;
+			( -["$ASCIIALNUM"] )
+				;;
+			( '' | [0123456789]* | *[!"$ASCIIALNUM"_]* )
+				_Msh_push_err=101
+				break ;;
+			esac ;;
+		esac
+	done
+	case ${_Msh_push_o-} in
+	( y )	_Msh_push_err=100 ;;
+	esac
+
+
+	case ${_Msh_push_err} in
+	( 0 ) for _Msh_push_V do
+
+		case ${_Msh_push_o-} in
+		( y )	_Msh_push_o=${_Msh_push_V}
+			_Msh_optNamToVar "${_Msh_push_o}" _Msh_push_V || { _Msh_push_err=103; break; }
+			case ${_Msh_push_V} in
+			( _Msh_ShellOptLtr_a )
+				isset _Msh_push_opta ;;
+			( _Msh_ShellOptLtr_? )
+				isset -${_Msh_push_V#_Msh_ShellOptLtr_} ;;
+			( * )	isset -o "${_Msh_push_o}" ;;
+			esac && eval "${_Msh_push_V}=''" || unset -v "${_Msh_push_V}"
+			unset -v _Msh_push_o ;;
+		esac
+
+		case ${_Msh_push_V} in
+		( -o )	_Msh_push_o=y
+			continue ;;
+		( -a )	case ${_Msh_push_opta+s} in
+			( s )	_Msh_ShellOptLtr_a='' ;;
+			( * )	unset -v _Msh_ShellOptLtr_a ;;
+			esac
+			_Msh_push_V='_Msh_ShellOptLtr_a'
+			;;
+		( -? )	_Msh_push_V=${_Msh_push_V#-}
+			case $- in
+			( *${_Msh_push_V}* )
+				eval "_Msh_ShellOptLtr_${_Msh_push_V}=''" ;;
+			( * )	unset -v "_Msh_ShellOptLtr_${_Msh_push_V}" ;;
+			esac
+			_Msh_push_V="_Msh_ShellOptLtr_${_Msh_push_V}"
+			;;
+		esac
+
+
+		eval "_Msh_push_SP=\${_Msh__V${_Msh_push_V}__SP=0}"
+		case ${_Msh_push_SP} in
+		( '' | *[!0123456789]* ) _Msh_push_err=102; break ;;
+		esac
+
+
+		if isset "${_Msh_push_V}"; then
+			eval "_Msh__V${_Msh_push_V}__S${_Msh_push_SP}=\$${_Msh_push_V}"
+		else
+			unset -v "_Msh__V${_Msh_push_V}__S${_Msh_push_SP}"
+		fi
+
+
+		case ${_Msh_push_key+s} in
+		( s )	eval "_Msh__V${_Msh_push_V}__K${_Msh_push_SP}=\${_Msh_push_key}" ;;
+		( * )	unset -v "_Msh__V${_Msh_push_V}__K${_Msh_push_SP}" ;;
+		esac
+
+
+		_Msh_push_SP=$((_Msh__V${_Msh_push_V}__SP += 1))
+	done;; esac
+	case ${_Msh_push_opta+s} in
+	( s )	set -a; unset -v _Msh_push_opta ;;
+	esac
+	case ${_Msh_push_err} in
+	( 100 )	die "push -o: long-form option name expected" ;;
+	( 101 ) die "push: invalid variable name or shell option: ${_Msh_push_V}" ;;
+	( 102 ) die "push: Stack pointer for ${_Msh_push_V} corrupted" ;;
+	( 103 ) die "push: internal error" ;;
+	esac
+	eval "unset -v _Msh_push_V _Msh_push_SP _Msh_push_err _Msh_push_key; return ${_Msh_push_err}"
+}
+
+if thisshellhas BUG_ARITHTYPE; then
+	if thisshellhas typeset && typeset -g +i _Msh_test 2>/dev/null; then
+
+
+		_Msh_pop_BUG_ARITHTYPE_workaround='typeset -g +i "${_Msh_pop_V}"; '
+	else
+		_Msh_initExit 'init: pop: cannot determine BUG_ARITHTYPE workaround' \
+			"This shell has BUG_ARITHTYPE but does not appear to be zsh. Modernish" \
+			"was not programmed to handle this; please report his as a bug."
+	fi
+else
+	unset -v _Msh_pop_BUG_ARITHTYPE_workaround
+fi
+pop() {
+	_Msh_pop_oldstatus=$?
+
+
+	unset -v _Msh_pop_key _Msh_pop_ks
+	while	case ${1-} in
+		( -- )		shift; break ;;
+		(--keepstatus)	_Msh_pop_ks= ;;
+		( --key=* )	_Msh_pop_key=${1#--key=} ;;
+		( --* )		die "pop: invalid option: $1" ;;
+		( * )		break ;;
+		esac
+	do
+		shift
+	done
+	case ${_Msh_pop_ks+s} in
+	( s )	unset -v _Msh_pop_ks ;;
+	( * )	unset -v _Msh_pop_oldstatus ;;
+	esac
+	case $# in
+	( 0 )	die "pop: needs at least 1 non-option argument" ;;
+	esac
+
+
+
+	case $- in
+	( *a* )	set +a; _Msh_pop_opta=y ;;
+	( * )	unset -v _Msh_pop_opta ;;
+	esac
+
+
+	_Msh_pop_err=0
+	unset -v _Msh_pop_o
+	for _Msh_pop_V do
+		case ${_Msh_pop_o-} in
+		( y )	unset -v _Msh_pop_o
+			_Msh_optNamToVar "${_Msh_pop_V}" _Msh_pop_V || { _Msh_pop_err=101; break; } ;;
+		( * )	case ${_Msh_pop_V} in
+			( -o )	_Msh_pop_o=y
+				use _IN/opt
+				continue ;;
+			( -["$ASCIIALNUM"] )
+				_Msh_pop_V="_Msh_ShellOptLtr_${_Msh_pop_V#-}" ;;
+			( "" | [0123456789]* | *[!"$ASCIIALNUM"_]* )
+				_Msh_pop_err=101
+				break ;;
+			esac ;;
+		esac
+
+
+		eval "_Msh_pop_SP=\${_Msh__V${_Msh_pop_V}__SP+s},\${_Msh__V${_Msh_pop_V}__SP-}"
+		case ${_Msh_pop_SP} in
+		( , )	_Msh_pop_err=$((_Msh_pop_err<1 ? 1 : _Msh_pop_err)); continue ;;
+		( s, | s,0* | s,*[!0123456789]* )
+			_Msh_pop_err=102; continue ;;
+		esac
+
+
+		_Msh_pop_SP=$((_Msh__V${_Msh_pop_V}__SP - 1))
+		eval "case \${_Msh_pop_key+k},\${_Msh_pop_key-},\${_Msh__V${_Msh_pop_V}__K${_Msh_pop_SP}+s} in
+		( ,, | k,\"\${_Msh__V${_Msh_pop_V}__K${_Msh_pop_SP}-}\",s )
+			;;
+		( * )	_Msh_pop_err=\$((_Msh_pop_err<2 ? 2 : _Msh_pop_err)) ;;
+		esac"
+	done
+	case ${_Msh_pop_o-} in
+	( y )	_Msh_pop_err=100 ;;
+	esac
+
+
+	case ${_Msh_pop_err} in
+	( 0 ) for _Msh_pop_V do
+
+		case ${_Msh_pop_o-} in
+		( y )	_Msh_pop_o=${_Msh_pop_V}
+			_Msh_optNamToVar "${_Msh_pop_V}" _Msh_pop_V || { _Msh_pop_err=103; break; } ;;
+		esac
+
+
+		case ${_Msh_pop_V} in
+		( -o )	_Msh_pop_o=y
+			continue ;;
+		( -? )	_Msh_pop_V="_Msh_ShellOptLtr_${_Msh_pop_V#-}" ;;
+		esac
+
+
+		_Msh_pop_SP=$((_Msh__V${_Msh_pop_V}__SP -= 1))
+
+
+		if isset "_Msh__V${_Msh_pop_V}__S${_Msh_pop_SP}"; then
+			eval "${_Msh_pop_BUG_ARITHTYPE_workaround-}${_Msh_pop_V}=\${_Msh__V${_Msh_pop_V}__S${_Msh_pop_SP}}"
+		else
+			unset -v "${_Msh_pop_V}"
+		fi
+
+
+		unset -v "_Msh__V${_Msh_pop_V}__S${_Msh_pop_SP}" "_Msh__V${_Msh_pop_V}__K${_Msh_pop_SP}"
+
+
+		case ${_Msh_pop_SP} in
+		( 0 )	unset -v "_Msh__V${_Msh_pop_V}__SP" _Msh_pop_SP ;;
+		esac
+
+
+		case ${_Msh_pop_V} in
+		( _Msh_ShellOptLtr_a )
+			case ${_Msh_ShellOptLtr_a+s} in
+			( s )	_Msh_pop_opta=y
+				unset -v _Msh_ShellOptLtr_a ;;
+			( * )	unset -v _Msh_pop_opta ;;
+			esac
+			;;
+		( _Msh_ShellOptLtr_["$ASCIIALNUM"] )
+			if isset "${_Msh_pop_V}"; then
+				isset "-${_Msh_pop_V#_Msh_ShellOptLtr_}" || set "-${_Msh_pop_V#_Msh_ShellOptLtr_}"
+				unset -v "${_Msh_pop_V}"
+			else
+				isset "-${_Msh_pop_V#_Msh_ShellOptLtr_}" && set "+${_Msh_pop_V#_Msh_ShellOptLtr_}"
+			fi
+			;;
+		( _Msh_ShellOpt_?* )
+			if isset "${_Msh_pop_V}"; then
+				isset -o "${_Msh_pop_o}" || set -o "${_Msh_pop_o}"
+				unset -v "${_Msh_pop_V}"
+			elif isset -o "${_Msh_pop_o}"; then
+				isset -o "${_Msh_pop_o}" && set +o "${_Msh_pop_o}"
+			fi ;;
+		esac
+		unset -v _Msh_pop_o
+	done;; esac
+	case ${_Msh_pop_opta+s} in
+	( s )	set -a; unset -v _Msh_pop_opta ;;
+	esac
+	case ${_Msh_pop_err} in
+	( 100 )	die "pop -o: long-form option name expected" ;;
+	( 101 ) die "pop: invalid variable name or shell option: ${_Msh_pop_V}" ;;
+	( 102 ) die "pop: Stack pointer for ${_Msh_pop_V} corrupted" ;;
+	( 103 ) die "pop: internal error" ;;
+	esac
+	case ${_Msh_pop_oldstatus+s} in
+	( s )	eval "unset -v _Msh_pop_V _Msh_pop_SP _Msh_pop_err _Msh_pop_oldstatus _Msh_pop_key
+		case ${_Msh_pop_err} in
+		( 0 )	;;
+		( * )	die \"pop --keepstatus: fatal: couldn't pop \$@${_Msh_pop_SP+${_Msh_pop_key+ (key mismatch)}}\"
+			return ;;
+		esac
+		return ${_Msh_pop_oldstatus}" ;;
+	( * )	eval "unset -v _Msh_pop_V _Msh_pop_SP _Msh_pop_err _Msh_pop_key; return ${_Msh_pop_err}" ;;
+	esac
+}
+
+
+
+if thisshellhas --bi=print LOCALVARS; then
+	eval 'putln() {
+		case $# in
+		( 0 )	command print ;;
+		( 1 )	command print -r -- "$1" ;;
+		( * )	local IFS="$CCn" && command print -r -- "$*" ;;
+		esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "putln: internal error"; }
+	}
+
+	put() {
+		case ${#},${1:+n} in
+		( [01], ) ;;
+		( 1,n )  command print -nr -- "$1" ;;
+		( * )	 local IFS=" " && command print -nr -- "$*" ;;
+		esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "put: internal error"; }
+	}'
+else
+
+	putln() {
+		case $# in
+		( 0 )	PATH=$DEFPATH command printf '\n' ;;
+		( * )	PATH=$DEFPATH command printf '%s\n' "$@" ;;
+		esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "putln: internal error"; }
+	}
+
+	if thisshellhas LOCALVARS; then
+		eval 'put() {
+			case ${#},${1:+n} in
+			( [01], ) ;;
+			( 1,n )  PATH=$DEFPATH command printf "%s" "$1" ;;
+			( * )	 local IFS=" " && PATH=$DEFPATH command printf "%s" "$*" ;;
+			esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "put: internal error"; }
+		}'
+	elif thisshellhas KSH93FUNC; then
+		eval 'function put {
+			case ${#},${1:+n} in
+			( [01], ) ;;
+			( 1,n )  PATH=$DEFPATH command printf "%s" "$1" ;;
+			( * )	 typeset IFS=" " && PATH=$DEFPATH command printf "%s" "$*" ;;
+			esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "put: internal error"; }
+		}'
+	else
+
+		put() {
+			case ${#},${1:+n} in
+			( [01], ) ;;
+			( 1,n )  PATH=$DEFPATH command printf '%s' "$1" ;;
+			( * )	 push IFS; IFS=' '
+				 PATH=$DEFPATH command printf '%s' "$*"
+				 pop --keepstatus IFS ;;
+			esac || { let "$? > 125 && $? != SIGPIPESTATUS" && die "put: internal error"; }
+		}
+	fi
+fi
+
+
+
+test() {
+	PATH=$DEFPATH command test "$@" \
+	|| ! case $? in
+	( 1 )	;;
+	( * )	shellquoteparams; die "command failed: test $@" ;;
+	esac
+}
+if command alias "[=_Msh_hardenBracket" 2>/dev/null; then
+
+	_Msh_hardenBracket() {
+		PATH=$DEFPATH command [ "$@" \
+		|| ! case $? in
+		( 1 )	;;
+		( * )	shellquoteparams; die "command failed: [ $@" ;;
+		esac
+	}
+fi
+
+
+
+unset -v _Msh_X _Msh_Y _Msh_goodlet
+if thisshellhas let; then
+	if let -- -1\<0 _Msh_X=1 _Msh_Y=_Msh_X+3 \
+	&& case ${_Msh_X-},${_Msh_Y-} in ( 1,4 ) ;; ( * ) false ;; esac \
+	&& unset -v _Msh_X _Msh_Y
+	then
+
+
+
+
+		alias let='let --'
+		_Msh_goodlet=y
+	elif let -1\<0 _Msh_X=1 _Msh_Y=_Msh_X+3 \
+	&& case ${_Msh_X-},${_Msh_Y-} in ( 1,4 ) ;; ( * ) false ;; esac \
+	&& unset -v _Msh_X _Msh_Y
+	then
+
+		_Msh_goodlet=y
+	fi
+fi 2>/dev/null
+case ${_Msh_goodlet+s} in
+( s )	let 014!=12 && (set -o letoctal) 2>/dev/null && set -o letoctal
+	unset -v _Msh_goodlet ;;
+( * )
+
+
+
+	eval 'let() {
+		case $# in
+		( 1 )	return "$((!($1)))" ;;
+		( 2 )	return "$((($1)&0|!($2)))" ;;
+		( 3 )	return "$((($1)&($2)&0|!($3)))" ;;
+		( 4 )	return "$((($1)&($2)&($3)&0|!($4)))" ;;
+		( 0 )	die "let: expression expected" ;;
+		esac
+		shift "$((($1)&($2)&($3)&($4)&0|4))"
+		let "$@"
+	}' ;;
+esac
+
+if thisshellhas DBLBRACKET; then
+	_Msh_doMatch='[[ $2 == $3 ]]'
+else
+	_Msh_doMatch='case $2 in ( $3 ) ;; ( * ) return 1 ;; esac'
+fi
+eval "_Msh_tmp_match() { ${_Msh_doMatch}; }"
+if ! _Msh_tmp_match - "? *x${CC01}y${CC7F}z\\" "??\\*\\x\\${CC01}\\y\\${CC7F}\\z\\"; then
+
+
+	if thisshellhas DBLBRACKET; then
+		_Msh_doMatchEval='[[ \$2 == ${_Msh_Q} ]]'
+	else
+		_Msh_doMatchEval='case \$2 in ( ${_Msh_Q} ) ;; ( * ) return 1 ;; esac'
+	fi
+	_Msh_doMatch='case $3 in
+		( *\\* )
+			_Msh_Q=
+			_Msh_P=$3
+			while :; do
+				case ${_Msh_P} in
+				( "" )	break ;;
+
+				($CCn*)	_Msh_Q=${_Msh_Q}\${CCn}
+					_Msh_P=${_Msh_P#?} ;;
+
+				(\\$CCn*)_Msh_Q=${_Msh_Q}\${CCn}
+					_Msh_P=${_Msh_P#??} ;;
+
+				(\\?*)	_Msh_Q=${_Msh_Q}${_Msh_P%"${_Msh_P#??}"}
+					_Msh_P=${_Msh_P#??} ;;
+
+				([][?*]* | ["$SHELLSAFECHARS"]*)
+					_Msh_Q=${_Msh_Q}${_Msh_P%"${_Msh_P#?}"}
+					_Msh_P=${_Msh_P#?} ;;
+
+				( * )	_Msh_Q=${_Msh_Q}\\${_Msh_P%"${_Msh_P#?}"}
+					_Msh_P=${_Msh_P#?} ;;
+				esac
+			done
+			eval "unset -v _Msh_P _Msh_Q; '"${_Msh_doMatchEval}"'"
+			return ;;
+		esac'${CCn}${_Msh_doMatch}
+fi
+
+if thisshellhas DBLBRACKETERE; then
+	_Msh_doEMatch='[[ $2 =~ $3 ]]'
+elif thisshellhas TESTERE; then
+
+	_Msh_doEMatch='test "$2" "=~" "$3"'
+else
+	_Msh_doEMatch='POSIXLY_CORRECT=y PATH=$DEFPATH command awk -f "$MSH_AUX/ematch.awk" -- "$2" "$3" \
+		|| case $? in (1) return 1;; (2) return 2;; (*) die "str ematch: '\''awk'\'' failed";; esac'
+fi
+
+if thisshellhas DBLBRACKET; then
+	_Msh_doSortsBefore='[[ $2 < $3 ]]'
+	_Msh_doSortsAfter='[[ $2 > $3 ]]'
+elif thisshellhas --bi=test \
+&& PATH=$DEFPATH command test "a${CCn}b" '<' "a${CCn}bb" 2>/dev/null \
+&& PATH=$DEFPATH command test "a${CCn}bb" '>' "a${CCn}b" 2>/dev/null
+then
+	_Msh_doSortsBefore='test "X$2" "<" "X$3"'
+	_Msh_doSortsAfter='test "X$2" ">" "X$3"'
+else
+	_Msh_doSortsBefore='PATH=$DEFPATH command expr "X$2" "<" "X$3" >/dev/null \
+		|| { let "$? > 1" && die "str lt: '\''expr'\'' failed"; }'
+	_Msh_doSortsAfter='PATH=$DEFPATH command expr "X$2" ">" "X$3" >/dev/null \
+		|| { let "$? > 1" && die "str gt: '\''expr'\'' failed"; }'
+fi
+
+eval 'str() {
+	case ${#},${1-} in
+	( 1,empty | 1,eq )
+			;;
+	( 1,isint | 1,isvarname | 1,ne )
+			return 1 ;;
+	( 2,eq | 2,in | 2,begin | 2,end | 2,match )
+			case $2 in ( "" ) ;; ( * ) return 1 ;; esac ;;
+	( 2,ematch )	str ematch "" "$2" ;;
+	( 2,ne )	case $2 in ( "" ) return 1 ;; esac ;;
+	( 2,empty )	case ${2:+n} in ( n ) return 1 ;; esac ;;
+	( 2,isint )	case ${2#"${2%%[!" $CCt$CCn"]*}"} in
+			( 0[xX]*[!0123456789abcdefABCDEF]* | [+-]0[xX]*[!0123456789abcdefABCDEF]* )
+				return 1 ;;
+			( 0[xX]?* | [+-]0[xX]?* )
+				;;
+			( "" | [+-] | ?*[+-]* | *[!0123456789+-]* | 0*[!01234567]* | [+-]0*[!01234567]* )
+				return 1 ;;
+			esac ;;
+	( 2,isvarname )	case $2 in
+			( "" | [0123456789]* | *[!"$ASCIIALNUM"_]* )
+				return 1 ;;
+			esac ;;
+	( 3,eq )	case $2 in (  "$3"  ) ;; ( * ) return 1 ;; esac ;;
+	( 3,ne )	case $2 in (  "$3"  ) return 1 ;; ( * ) ;; esac ;;
+	( 3,in )	case $2 in ( *"$3"* ) ;; ( * ) return 1 ;; esac ;;
+	( 3,begin )	case $2 in (  "$3"* ) ;; ( * ) return 1 ;; esac ;;
+	( 3,end )	case $2 in ( *"$3"  ) ;; ( * ) return 1 ;; esac ;;
+	( 3,match )	'"${_Msh_doMatch}"' ;;
+	( 3,ematch )	case $3 in ( "" ) die "str ematch: empty ERE" ;; ( * ) '"${_Msh_doEMatch}"' ;; esac ;;
+	( 3,lt )	'"${_Msh_doSortsBefore}"' ;;
+	( 3,gt )	'"${_Msh_doSortsAfter}"' ;;
+	( 3,le )	str lt "$2" "$3" || str eq "$2" "$3" ;;
+	( 3,ge )	str gt "$2" "$3" || str eq "$2" "$3" ;;
+	( *,*,* )	die "str: invalid operator: $1" ;;
+	( *,empty | *,isint | *,isvarname )
+			die "str $1: need max. 1 argument, got $((${#}-1))" ;;
+	( *,eq | *,ne )	die "str $1: need max. 2 arguments, got $((${#}-1))" ;;
+	( *,in | *,begin | *,end | *,match | *,ematch )
+			die "str $1: need 1 or 2 arguments, got $((${#}-1))" ;;
+	( *,lt | *,gt | *,le | *,ge )
+			die "str $1: need 2 arguments, got $((${#}-1))" ;;
+	( 0, )		die "str: operator expected" ;;
+	( * )		die "str: invalid operator: $1" ;;
+	esac
+}'
+unset -v _Msh_doMatchEval _Msh_doMatch _Msh_doEMatch _Msh_doSortsBefore _Msh_doSortsAfter
+
+if thisshellhas DBLBRACKET; then
+
+	eval '[[ / -nt /dev/null/nonexistent ]]' && _Msh_test= || _Msh_test=y
+	eval 'can() {
+		case $# in
+		( 1 )	case $1 in
+			( read | write | exec | traverse )
+
+				return 1 ;;
+			( * )	die "can: invalid operator: $1" ;;
+			esac ;;
+		( 2 )	case $1 in
+			( read )
+				[[ -r $2 ]] ;;
+			( write )
+				[[ -d $2 && ( -w $2 && -x $2 ) || -w $2 ]] ;;
+			( exec )
+				[[ -x $2 && -f $2 ]] ;;
+			( traverse )
+				[[ -x $2 && -d $2 ]] ;;
+			( * )	die "can: invalid operator: $1" ;;
+			esac ;;
+		( * )	die "can: need 1 or 2 arguments, got $#" ;;
+		esac
+	}
+	is() {
+		case $# in
+		( 1 )	case $1 in
+			( present | reg | dir | sym | fifo | socket | blockspecial | charspecial \
+			| nonempty | setuid | setgid | mine | mygroup )
+
+				return 1 ;;
+			( * )	die "is: invalid operator: $1" ;;
+			esac ;;
+		( 2 )	case $1 in
+			( present )
+				[[ -e $2 || -L $2 ]] ;;
+			( reg )	[[ ! -L $2 && -f $2 ]] ;;
+			( dir )	[[ ! -L $2 && -d $2 ]] ;;
+			( sym )	[[ -L $2 ]] ;;
+			( fifo )
+				[[ ! -L $2 && -p $2 ]] ;;
+			( socket )
+				[[ ! -L $2 && -S $2 ]] ;;
+			( blockspecial )
+				[[ ! -L $2 && -b $2 ]] ;;
+			( charspecial )
+				[[ ! -L $2 && -c $2 ]] ;;
+			( nonempty )
+				if [[ -d $2 ]]; then
+					[[ -r $2 ]] || return 2
+					case $- in
+					( *f* ) set +f
+						set -- "${2%/}" "${2%/}"/[*] "${2%/}"/* "${2%/}"/.[!.]* "${2%/}"/.??*
+						set -f ;;
+					( * )	set -- "${2%/}" "${2%/}"/[*] "${2%/}"/* "${2%/}"/.[!.]* "${2%/}"/.??* ;;
+					esac
+					[[ "${#} $2 $3 $4 $5" != "5 $1/[*] $1/* $1/.[!.]* $1/.??*" ]]
+				else
+					[[ -s $2 ]]
+				fi ;;
+			( setuid )
+				[[ -u $2 ]] ;;
+			( setgid )
+				[[ -g $2 ]] ;;
+			( mine )
+				[[ -O $2 ]] ;;
+			( mygroup )
+				[[ -G $2 ]] ;;
+			( onterminal )
+				case $2 in
+				( *[!0123456789]* )
+					die "is onterminal: invalid file descriptor: $2" ;;
+				( * )	[[ -t $2 ]] ;;
+				esac ;;
+			( -L )	case $2 in
+				( present | reg | dir | sym | fifo | socket | blockspecial | charspecial )
+
+					return 1 ;;
+				( * )	die "is -L: invalid operator: $2" ;;
+				esac ;;
+			( * )	die "is: invalid operator: $2" ;;
+			esac ;;
+		( 3 )	case $1 in
+			( -L )	case $2 in
+				( present )
+					[[ -e $3 ]] ;;
+				( reg )	[[ -f $3 ]] ;;
+				( dir )	[[ -d $3 ]] ;;
+				( sym )	[[ -L $3 && -e $3 ]] ;;
+				( fifo )
+					[[ -p $3 ]] ;;
+				( socket )
+					[[ -S $3 ]] ;;
+				( blockspecial )
+					[[ -b $3 ]] ;;
+				( charspecial )
+					[[ -c $3 ]] ;;
+				( * )	die "is -L: invalid operator: $2" ;;
+				esac ;;
+			( newer )
+				if [[ -L "$2" || -L "$3" ]]; then
+					if is present "$2"; then is present "$3" || return 0; else return 1; fi
+					[[ $2 == -* ]] && set -- "$1" "./$2" "$3"
+					case $(PATH=$DEFPATH; unset -f find
+						exec find "$2" -newer "$3" -print -prune) in
+					( "" ) return 1 ;;
+					esac
+				else
+					[[ $2 -nt $3'${_Msh_test:+' || ( -e $2 && ! -e $3 )'}' ]]
+				fi ;;
+			( older )
+				if [[ -L "$2" || -L "$3" ]]; then
+					if is present "$3"; then is present "$2" || return 0; else return 1; fi
+					[[ $3 == -* ]] && set -- "$1" "$2" "./$3"
+					case $(PATH=$DEFPATH; unset -f find
+						exec find "$3" -newer "$2" -print -prune) in
+					( "" ) return 1 ;;
+					esac
+				else
+					[[ $2 -ot $3'${_Msh_test:+' || ( -e $3 && ! -e $2 )'}' ]]
+				fi ;;
+			( samefile )
+				[[ -L "$2" ]] && set -- "$1" "$2" "$3" "A"
+				[[ -L "$3" ]] && set -- "$1" "$2" "$3" "${4-}B"
+				case ${4-} in
+				( AB )
+
+					push IFS -f
+					IFS=$WHITESPACE; set -f
+					set -- "$1" "$2" $(PATH=$DEFPATH; unset -f ls; exec ls -idF "$3")
+					set -- "$1" "$3" $(PATH=$DEFPATH; unset -f ls; exec ls -idF "$2")
+					pop IFS -f
+					let "$# > 3" && str isint "$3" && str isint "$2" \
+					|| die "is samefile: internal error"
+					[[ $3 == "$2" ]] ;;
+				( "" )	[[ $2 -ef $3 ]] ;;
+				( * )	return 1 ;;
+				esac ;;
+			( onsamefs )
+
+				[[ $2 != */* ]] && set -- "$1" "$PWD/$2" "$3"
+				[[ $3 != */* ]] && set -- "$1" "$2" "$PWD/$3"
+
+				[[ -e $2 || -L $2 ]] || return
+				[[ -e $3 || -L $3 ]] || return
+
+				[[ -L $2 || (! -f $2 && ! -d $2) ]] && set -- "$1" "${2%/*}" "$3"
+				[[ -L $3 || (! -f $3 && ! -d $3) ]] && set -- "$1" "$2" "${3%/*}"
+
+				[[ ${2:-/} == "${3:-/}" ]] || _Msh_doIsOnSameFs "${2:-/}" "${3:-/}" ;;
+			( * )	die "is: invalid arguments" ;;
+			esac ;;
+		( 4 )	case $1 in
+			( -L )	case $2 in
+				( newer )
+					[[ $3 -nt $4'${_Msh_test:+' || ( -e $3 && ! -e $4 )'}' ]] ;;
+				( older )
+					[[ $3 -ot $4'${_Msh_test:+' || ( -e $4 && ! -e $3 )'}' ]] ;;
+				( samefile )
+					[[ $3 -ef $4 ]] ;;
+				( onsamefs )
+
+					[[ $3 != */* ]] && set -- "$1" "$2" "$PWD/$3" "$4"
+					[[ $4 != */* ]] && set -- "$1" "$2" "$3" "$PWD/$4"
+
+					[[ -e $3 || -L $3 ]] || return
+					[[ -e $4 || -L $4 ]] || return
+
+
+					if [[ -L $3 && -e $3 && ! -d $3 && ! -f $3 ]]; then
+						set -- "$1" "$2" "$(POSIXLY_CORRECT=y PATH=$DEFPATH command ls -ld -- "$3"
+							put X)" "$4" "$3"
+						set -- "$1" "$2" "${3%${CCn}X}" "$4" "$5"
+						set -- "$1" "$2" "${3#*" $5 -> "}" "$4"
+					fi
+					if [[ -L $4 && -e $3 && ! -d $4 && ! -f $4 ]]; then
+						set -- "$1" "$2" "$3" "$(POSIXLY_CORRECT=y PATH=$DEFPATH command ls -ld -- "$4"
+							put X)" "$4"
+						set -- "$1" "$2" "$3" "${4%${CCn}X}" "$5"
+						set -- "$1" "$2" "$3" "${4#*" $5 -> "}"
+					fi
+
+					[[ ! -e $3 || (! -f $3 && ! -d $3) ]] && set -- "$1" "$2" "${3%/*}" "$4"
+					[[ ! -e $4 || (! -f $4 && ! -d $4) ]] && set -- "$1" "$2" "$3" "${4%/*}"
+
+					[[ ${3:-/} == "${4:-/}" ]] || _Msh_doIsOnSameFs "${3:-/}" "${4:-/}" ;;
+				( * )	die "is -L: invalid operator: $3" ;;
+				esac ;;
+			( * )	die "is: invalid arguments" ;;
+			esac ;;
+		( * )	die "is: need 1 or 2 arguments, got $#" ;;
+		esac
+	}'
+else
+
+	test / -nt /dev/null/nonexistent && _Msh_test= || _Msh_test=y
+	eval 'can() {
+		case $# in
+		( 1 )	case $1 in
+			( read | write | exec | traverse )
+
+				return 1 ;;
+			( * )	die "can: invalid operator: $1" ;;
+			esac ;;
+		( 2 )	case $1 in
+			( read )
+				test -r "$2" ;;
+			( write )
+				if	test -d "$2"
+				then	test -w "$2" && test -x "$2"
+				else	test -w "$2"
+				fi ;;
+			( exec )
+				test -x "$2" && test -f "$2" ;;
+			( traverse )
+				test -x "$2" && test -d "$2" ;;
+			( * )	die "can: invalid operator: $1" ;;
+			esac ;;
+		( * )	die "can: need 1 or 2 arguments, got $#" ;;
+		esac
+	}
+	is() {
+		case $# in
+		( 1 )	case $1 in
+			( present | reg | dir | sym | fifo | socket | blockspecial | charspecial \
+			| setuid | setgid | mine | mygroup )
+
+				return 1 ;;
+			( * )	die "is: invalid operator: $1" ;;
+			esac ;;
+		( 2 )	case $1 in
+			( present )
+				test -e "$2" || test -L "$2" ;;
+			( reg )	! test -L "$2" && test -f "$2" ;;
+			( dir )	! test -L "$2" && test -d "$2" ;;
+			( sym )	test -L "$2" ;;
+			( fifo )
+				! test -L "$2" && test -p "$2" ;;
+			( socket )
+				! test -L "$2" && test -S "$2" ;;
+			( blockspecial )
+				! test -L "$2" && test -b "$2" ;;
+			( charspecial )
+				! test -L "$2" && test -c "$2" ;;
+			( nonempty )
+				if test -d "$2"; then
+					test -r "$2" || return 2
+					case $- in
+					( *f* ) set +f
+						set -- "${2%/}" "${2%/}"/[*] "${2%/}"/* "${2%/}"/.[!.]* "${2%/}"/.??*
+						set -f ;;
+					( * )	set -- "${2%/}" "${2%/}"/[*] "${2%/}"/* "${2%/}"/.[!.]* "${2%/}"/.??* ;;
+					esac
+					case "${#} $2 $3 $4 $5" in
+					( "5 $1/[*] $1/* $1/.[!.]* $1/.??*" )
+						return 1 ;;
+					esac
+				else
+					test -s "$2"
+				fi ;;
+			( setuid )
+				test -u "$2" ;;
+			( setgid )
+				test -g "$2" ;;
+
+
+
+			( mine )
+				test -O "$2" ;;
+			( mygroup )
+				test -G "$2" ;;
+			( onterminal )
+				case $2 in
+				( *[!0123456789]* )
+					die "is onterminal: invalid file descriptor: $2" ;;
+				( * )	test -t "$2" ;;
+				esac ;;
+			( -L )	case $2 in
+				( present | reg | dir | sym | fifo | socket | blockspecial | charspecial )
+
+					return 1 ;;
+				( * )	die "is -L: invalid operator: $2" ;;
+				esac ;;
+			( * )	die "is: invalid operator: $1" ;;
+			esac ;;
+		( 3 )	case $1 in
+			( -L )	case $2 in
+				( present )
+					test -e "$3" ;;
+				( reg )	test -f "$3" ;;
+				( dir )	test -d "$3" ;;
+				( sym )	test -L "$3" && test -e "$3" ;;
+				( fifo )
+					test -p "$3" ;;
+				( socket )
+					test -S "$3" ;;
+				( blockspecial )
+					test -b "$3" ;;
+				( charspecial )
+					test -c "$3" ;;
+				( * )	die "is -L: invalid operator: $2" ;;
+				esac ;;
+
+
+
+			( newer )
+				if test -L "$2" || test -L "$3"; then
+					if is present "$2"; then is present "$3" || return 0; else return 1; fi
+					case $2 in ( -* ) set -- "$1" "./$2" "$3";; esac
+					case $(PATH=$DEFPATH; unset -f find
+						exec find "$2" -newer "$3" -print -prune) in
+					( "" ) return 1 ;;
+					esac
+				else
+					test "$2" -nt "$3"'${_Msh_test:+' || { test -e "$2" && ! test -e "$3"; '\}}'
+				fi ;;
+			( older )
+				if test -L "$2" || test -L "$3"; then
+					if is present "$3"; then is present "$2" || return 0; else return 1; fi
+					case $3 in ( -* ) set -- "$1" "$2" "./$3";; esac
+					case $(PATH=$DEFPATH; unset -f find
+						exec find "$3" -newer "$2" -print -prune) in
+					( "" ) return 1 ;;
+					esac
+				else
+					test "$2" -ot "$3"'${_Msh_test:+' || { test -e "$3" && ! test -e "$2"; '\}}'
+				fi ;;
+			( samefile )
+				test -L "$2" && set -- "$1" "$2" "$3" "A"
+				test -L "$3" && set -- "$1" "$2" "$3" "${4-}B"
+				case ${4-} in
+				( AB )
+
+					push IFS -f
+					IFS=$WHITESPACE; set -f
+					set -- "$1" "$2" $(PATH=$DEFPATH; unset -f ls; exec ls -idF "$3")
+					set -- "$1" "$3" $(PATH=$DEFPATH; unset -f ls; exec ls -idF "$2")
+					pop IFS -f
+					let "$# > 3" && str isint "$3" && str isint "$2" \
+					|| die "is samefile: internal error"
+					str eq "$3" "$2" ;;
+				( "" )	test "$2" -ef "$3" ;;
+				( * )	return 1 ;;
+				esac ;;
+			( onsamefs )
+
+				case $2 in (*/*) ;; (*) set -- "$1" "$PWD/$2" "$3" ;; esac
+				case $3 in (*/*) ;; (*) set -- "$1" "$2" "$PWD/$3" ;; esac
+
+				test -e "$2" || test -L "$2" || return
+				test -e "$3" || test -L "$3" || return
+
+				{ test -L "$2" || { ! test -f "$2" && ! test -d "$2"; }; } && set -- "$1" "${2%/*}" "$3"
+				{ test -L "$3" || { ! test -f "$3" && ! test -d "$3"; }; } && set -- "$1" "$2" "${3%/*}"
+
+				case ${2:-/} in ("${3:-/}") ;; ( * ) _Msh_doIsOnSameFs "${2:-/}" "${3:-/}" ;; esac ;;
+			( * )	die "is: invalid arguments" ;;
+			esac ;;
+		( 4 )	case $1 in
+			( -L )	case $2 in
+				( newer )
+					test "$3" -nt "$4"'${_Msh_test:+' || { test -e "$3" && ! test -e "$4"; '\}}' ;;
+				( older )
+					test "$3" -ot "$4"'${_Msh_test:+' || { test -e "$4" && ! test -e "$3"; '\}}' ;;
+				( samefile )
+					test "$3" -ef "$4" ;;
+				( onsamefs )
+
+					case $3 in (*/*) ;; (*) set -- "$1" "$2" "$PWD/$3" "$4" ;; esac
+					case $4 in (*/*) ;; (*) set -- "$1" "$2" "$3" "$PWD/$4" ;; esac
+
+					test -e "$3" || test -L "$3" || return
+					test -e "$4" || test -L "$4" || return
+
+
+					if test -L "$3" && test -e "$3" && ! test -d "$3" && ! test -f "$3"; then
+						set -- "$1" "$2" "$(POSIXLY_CORRECT=y PATH=$DEFPATH command ls -ld -- "$3"
+							put X)" "$4" "$3"
+						set -- "$1" "$2" "${3%${CCn}X}" "$4" "$5"
+						set -- "$1" "$2" "${3#*" $5 -> "}" "$4"
+					fi
+					if test -L "$4" && test -e "$3" && ! test -d "$4" && ! test -f "$4"; then
+						set -- "$1" "$2" "$3" "$(POSIXLY_CORRECT=y PATH=$DEFPATH command ls -ld -- "$4"
+							put X)" "$4"
+						set -- "$1" "$2" "$3" "${4%${CCn}X}" "$5"
+						set -- "$1" "$2" "$3" "${4#*" $5 -> "}"
+					fi
+
+					{ ! test -e "$3"||{ ! test -f "$3"&&! test -d "$3";};} && set -- "$1" "$2" "${3%/*}" "$4"
+					{ ! test -e "$4"||{ ! test -f "$4"&&! test -d "$4";};} && set -- "$1" "$2" "$3" "${4%/*}"
+
+					case ${3:-/} in ("${4:-/}") ;; ( * ) _Msh_doIsOnSameFs "${3:-/}" "${4:-/}" ;; esac ;;
+				( * )	die "is -L: invalid operator: $3" ;;
+				esac ;;
+			( * )	die "is: invalid arguments" ;;
+			esac ;;
+		( * )	die "is: need 1 or 2 arguments, got $#" ;;
+		esac
+	}'
+fi
+_Msh_doIsOnSameFs() {
+
+
+	_Msh_is=$(export POSIXLY_CORRECT=y "PATH=$DEFPATH"
+		unset -f df sed
+		exec df -P -- "$1" "$2" | exec sed '1d; s/\([[:blank:]]\{1,\}[[:digit:]]\{1,\}\)\{4\}%[[:blank:]]\{1,\}/,/')
+
+	case ${_Msh_is#*$CCn} in
+	( *$CCn* | "${_Msh_is}" )
+		die "is onsamefs: internal error" ;;
+	( "${_Msh_is%$CCn*}" )
+		unset -v _Msh_is ;;
+	( * )	! unset -v _Msh_is ;;
+	esac
+}
+
+
+alias source='_Msh_doSource "$#" "$@"'
+_Msh_doSource() {
+	let "$# > ( $1 + 1 )" || die "source: need at least 1 argument, got 0"
+	eval "_Msh_source_S=\${$(( $1 + 2 ))}"
+
+	if let "$# > ( $1 + 2 )"; then
+
+
+		shift "$(( $1 + 2 ))"
+	else
+
+
+		_Msh_source_P=''
+		_Msh_source_i=1
+		while let "(_Msh_source_i+=1) < $#"; do
+			_Msh_source_P="${_Msh_source_P} \"\${${_Msh_source_i}}\""
+		done
+		eval "set -- ${_Msh_source_P}"
+		unset -v _Msh_source_P _Msh_source_i
+	fi
+
+
+	case ${_Msh_source_S} in
+	( */* ) ;;
+	( * )	if is -L reg "${_Msh_source_S}"; then
+			_Msh_source_S=./${_Msh_source_S}
+		fi ;;
+	esac
+
+	. "${_Msh_source_S}"
+	eval "unset -v _Msh_source_S; return $?"
+}
+
+
+
+if thisshellhas ROFUNC; then
+	readonly -f \
+		_Msh_cacheCap _Msh_doCapTest _Msh_doExit _Msh_doIsOnSameFs \
+		_Msh_doSource _Msh_doUse _Msh_hardenBracket \
+		_Msh_issetExHandleExport _Msh_qV_PP _Msh_qV_R _Msh_qV_dblQuote \
+		_Msh_qV_sngQuote can chdir die insubshell is isset let pop push \
+		put putln setstatus shellquote str test thisshellhas use
+fi 2>/dev/null
+
+if isset ZSH_VERSION && alias readonly >/dev/null 2>&1 && thisshellhas DBLBRACKET; then
+	alias readonly='typeset -r"$([[ -o posixbuiltins ]] && builtin echo g)"'
+fi
+
+case ${KSH_VERSION-} in
+( 'Version '* | 2[0-9][0-9][0-9].* )
+
+
+	LC_ALL=foo_BAR.baz command true 2>/dev/null
+
+
+	case ${!-} in
+	( '' )	case $- in
+		( *m* )	{ true & wait "$!"; } 2>/dev/null ;;
+		( * )	true & ;;
+		esac ;;
+	esac
+	;;
+esac
+
+_Msh_tmp_doHashbangPreload() {
+	while IFS='' read -r _Msh_doHbPl_L 2>/dev/null; do
+		str begin "${_Msh_doHbPl_L}" "#!" || break
+
+		_Msh_doHbPl_L=${_Msh_doHbPl_L#??}
+		_Msh_doHbPl_L=${_Msh_doHbPl_L%%[" $CCt"]#*}
+
+		push IFS -f
+		unset -v IFS; set -f
+		set -- ${_Msh_doHbPl_L}
+		pop IFS -f
+		let "$# > 0" || continue
+		str in "$1" '/' && continue
+
+		case $1 in
+		( \#* )	continue ;;
+		( use ) ;;
+		( * )	die "invalid hashbang command: ${_Msh_doHbPl_L}" ;;
+		esac
+		"$@" || die "hashbang command failed: ${_Msh_doHbPl_L}"
+	done
+
+}
+
+PATH=${_Msh_PATH}
+unset -v _Msh_PATH _Msh_test
+unset -f _Msh_initExit _Msh_testFn
+
+readonly MSH_VERSION MSH_SHELL MSH_PREFIX MSH_MDL MSH_AUX MSH_CONFIG DEFPATH
+
+
+ME=$0
+if ! str end "$0" '/modernish' && ! str eq "$0" 'modernish'; then
+
+
+
+		readonly "ME=$0"
+		if is -L reg "$ME" && can read "$ME"; then
+			_Msh_tmp_doHashbangPreload < "$ME"
+			unset -v _Msh_doHbPl_L
+		fi
+	unset -f _Msh_tmp_doHashbangPreload
+
+	if isset _Msh_allexport; then
+		set -a
+		unset -v _Msh_allexport
+	fi
+
+
+
+
+
+else
+
+
+command set +o braceexpand 2>/dev/null
+
+echo() {
+	case ${#},${1-} in
+	( 0, )   putln ;;
+	( 1,* )  putln "$1" ;;
+	( *,-n ) shift; put "$@" ;;
+	( * )	 put "$@$CCn" ;;
+	esac
+}
+if thisshellhas ROFUNC; then
+	readonly -f echo
+fi
+
+if let "$#"; then
+
+	unset -v _Msh_script _Msh_noexec _Msh_xtrace _Msh_stdin
+	while str match "${1:-}" '[+-]*'; do
+		case $1 in
+		( [+-][!-]?* )
+			_Msh_opts=$1
+			_Msh_plusmin=${1%"${1#?}"}
+			shift
+			while _Msh_opts=${_Msh_opts#?} && ! str empty "${_Msh_opts}"; do
+				_Msh_arg=${_Msh_plusmin}${_Msh_opts%"${_Msh_opts#?}"}
+				push _Msh_arg
+				case ${_Msh_opts} in
+				( o* )
+					_Msh_arg=${_Msh_opts#?}
+					! str empty "${_Msh_arg}" && push _Msh_arg && break ;;
+				esac
+			done
+			while pop _Msh_arg; do
+				set -- "${_Msh_arg}" "$@"
+			done
+			unset -v _Msh_opts _Msh_arg _Msh_plusmin
+			continue ;;
+		( -c )	_Msh_script= ;;
+		( +c )	unset -v _Msh_script ;;
+		( -i | -l )
+			_Msh_doExit 2 "To use modernish interactively, source it ('. modernish') in your shell profile."
+			;;
+		( +i | +l ) ;;
+		( -s )	_Msh_stdin= ;;
+		( +s )	unset -v _Msh_stdin ;;
+		( [+-]o )
+			let "$# >= 2" || _Msh_doExit 2 "option requires argument: -o"
+			case $1,$2 in
+			( -o,errexit )
+				_Msh_doExit 2 "'$1 $2' not supported; use sys/cmd/harden instead." ;;
+			( -o,noexec | -o,stdin )
+				eval "_Msh_$2=" ;;
+			( +o,noexec | +o,stdin )
+				unset -v "_Msh_$2" ;;
+			( ?o,xtrace )
+				_Msh_xtrace=${1%o}x ;;
+			( * )	set "$1" "$2" || exit ;;
+			esac
+			shift
+			;;
+		( -e )	_Msh_doExit 2 "'-e' not supported; use sys/cmd/harden instead."
+			;;
+		( -n )	_Msh_noexec= ;;
+		( +n )	unset _v _Msh_noexec ;;
+		( [+-]x )
+			_Msh_xtrace=$1 ;;
+		( [+-][!-]* )
+			set "$1" || exit ;;
+		( --use | --use= )
+			_Msh_doExit 2 "option requires argument: --use" ;;
+		( --use=* )
+
+			_Msh_tmp_doUse() {
+				push IFS -f
+				unset -v IFS; set -f
+				set -- $1
+				pop IFS -f
+				use "$@"
+			}
+			_Msh_tmp_doUse "${1#--use=}"
+			unset -f _Msh_tmp_doUse ;;
+		( --version | --help )
+			putln "This is modernish version $MSH_VERSION." \
+			      "Bundled version. Not for general use." \
+			      "Modernish lives in:	MSH_PREFIX=$MSH_PREFIX" \
+			      "Known-good shell:	MSH_SHELL=$MSH_SHELL" \
+			      "Default utility PATH:	DEFPATH=$DEFPATH" \
+			      "User config directory:	MSH_CONFIG=$MSH_CONFIG"
+			exit ;;
+		( -- )
+			shift
+			break
+			;;
+		( * )
+			_Msh_doExit 2 "invalid option: $1"
+			;;
+		esac
+		shift
+	done
+fi
+if isset _Msh_script; then
+
+
+
+	let "$#" && _Msh_script=$1 && shift || _Msh_doExit 2 'the -c option was specified but no script was given'
+	let "$#" && ME=$1 && shift
+	readonly ME
+	thisshellhas BUG_HDOCMASK && _Msh_umask=$(command umask) && umask u+r
+	_Msh_tmp_doHashbangPreload <<-EOF
+	${_Msh_script}
+	EOF
+	thisshellhas BUG_HDOCMASK && command umask "${_Msh_umask}" && unset -v _Msh_umask
+	unset -f _Msh_tmp_doHashbangPreload
+	isset _Msh_allexport && set -a && unset -v _Msh_allexport
+	eval "unset -v _Msh_script _Msh_doHbPl_L _Msh_noexec _Msh_xtrace" \
+		"${_Msh_noexec+${CCn}set -n${CCn}set +n${CCn}exit 128 'this shell cannot switch to noexec'}" \
+		"${_Msh_xtrace+${CCn}set ${_Msh_xtrace}}" \
+		"${CCn}${_Msh_script}"
+elif let "$#" && ! isset _Msh_stdin; then
+
+	is -L reg "$1" || _Msh_doExit 127 "file not found: $1"
+	readonly "ME=$1"
+	shift
+	_Msh_tmp_doHashbangPreload < "$ME"
+	unset -f _Msh_tmp_doHashbangPreload
+	unset -v _Msh_doHbPl_L
+	isset _Msh_allexport && set -a && unset -v _Msh_allexport
+	if isset _Msh_noexec; then
+		eval "$(putln "set -n" "set +n" "exit 128 'this shell cannot switch to noexec'"
+			PATH=$DEFPATH exec cat "$ME")"
+		\exit
+	fi
+	case $ME in
+	( */* )	isset _Msh_xtrace && eval "unset -v _Msh_xtrace; set ${_Msh_xtrace}"
+		. "$ME" ;;
+	( * )	isset _Msh_xtrace && eval "unset -v _Msh_xtrace; set ${_Msh_xtrace}"
+		. "./$ME" ;;
+	esac
+elif is onterminal 0 && ! isset _Msh_stdin; then
+
+
+
+	_Msh_doExit 2 "Bundled version of modernish. Interactive use not supported."
+else
+
+
+	readonly ME
+	_Msh_tmp_doHashbangPreload
+	unset -f _Msh_tmp_doHashbangPreload
+	isset _Msh_allexport && set -a && unset -v _Msh_allexport
+	eval "unset -v _Msh_doHbPl_L _Msh_noexec _Msh_xtrace" \
+		"${_Msh_noexec+${CCn}set -n${CCn}set +n${CCn}exit 128 'this shell cannot switch to noexec'}" \
+		"${_Msh_xtrace+${CCn}set ${_Msh_xtrace}}" \
+		"${CCn}${_Msh_doHbPl_L}${CCn}$(PATH=$DEFPATH exec cat)"
+fi
+
+fi

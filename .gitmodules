@@ -1,0 +1,3 @@
+[submodule "modernish"]
+	path = modernish
+	url = https://github.com/modernish/modernish.git
