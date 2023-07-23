@@ -1,5 +1,5 @@
 #! /bin/sh
-# Wrapper script to run glossary-to-csv.sh with bundled modernish
+# Wrapper script to run past-exam-question-to-csv.sh with bundled modernish
 
 min_posix='cd -P -- / && ! { ! case x in ( x ) : ${0##*/} || : $( : ) ;; esac; }'
 if (eval "$min_posix") 2>/dev/null; then
@@ -61,11 +61,11 @@ MSH_SHELL=/bin/sh
 . "$MSH_PREFIX/lib/modernish/aux/goodsh.sh" || exit
 case $MSH_SHELL in
 ( */sh )	;;
-( * )	echo glossary-to-csv.sh: "warning: sh shell not usable; running on $MSH_SHELL" >&2 ;;
+( * )	echo past-exam-question-to-csv.sh: "warning: sh shell not usable; running on $MSH_SHELL" >&2 ;;
 esac
 
 # Prefix launch arguments.
-set -- "$MSH_PREFIX"/bin/glossary-to-csv.sh "$@"
+set -- "$MSH_PREFIX"/bin/past-exam-question-to-csv.sh "$@"
 PATH=$MSH_PREFIX/bin:$PATH	# make '. modernish' work
 
 # Run bundled script.

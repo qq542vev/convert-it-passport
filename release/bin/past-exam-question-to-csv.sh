@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-### Script: past-exam-questions-to-csv.sh
+### Script: past-exam-question-to-csv.sh
 ##
 ## 過去問題集を Anki デッキ用の CSV に変換する。
 ##
@@ -160,7 +160,7 @@
 ##   143 - received SIGTERM
 ## ------------------
 
-readonly 'VERSION=past-exam-questions-to-csv.sh 0.0.1'
+readonly 'VERSION=past-exam-question-to-csv.sh 0.0.1'
 
 set -Cefu
 umask '0022'

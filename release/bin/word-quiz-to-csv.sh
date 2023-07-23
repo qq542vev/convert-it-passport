@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-### Script: glossary-to-csv.sh
+### Script: word-quiz-to-csv.sh
 ##
 ## 用語集を Anki デッキ用の CSV に変換する。
 ##
@@ -60,7 +60,7 @@
 ##   143 - received SIGTERM
 ## ------------------
 
-readonly 'VERSION=glossary-to-csv.sh 0.0.1'
+readonly 'VERSION=word-quiz-to-csv.sh 0.0.1'
 
 set -Cefu
 umask '0022'

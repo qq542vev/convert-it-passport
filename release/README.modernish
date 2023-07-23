@@ -1,5 +1,5 @@
-This directory contains the programs 'glossary-to-csv.sh' and 
-'past-exam-questions-to-csv.sh' along with a stripped-down copy of modernish 
+This directory contains the programs 'word-quiz-to-csv.sh' and 
+'past-exam-question-to-csv.sh' along with a stripped-down copy of modernish 
 0.17.23-dev, the portable shell programming library that takes the 'hell' out 
 of shell! This way of bundling allows running modernish programs without 
 installing the library system-wide.

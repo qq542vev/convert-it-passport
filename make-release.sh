@@ -5,6 +5,6 @@ case "${0}" in
 	*) basedir=".";;
 esac
 
-"${basedir}/modernish/install.sh" -B -D 'release' -d '/' -s '/bin/sh' -- "${basedir}/bin/glossary-to-csv.sh" "${basedir}/bin/past-exam-questions-to-csv.sh"
+find -- "${basedir}/bin" -type f -exec "${basedir}/modernish/install.sh" -B -D 'release' -d '/' -s '/bin/sh' -- "{}" '+'
 
 find -- "${basedir}/lib" -type f -exec cp -- '{}' 'release/lib' ';'
