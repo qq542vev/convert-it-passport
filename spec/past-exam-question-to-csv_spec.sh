@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
-### File: past-exam-questions-to-csv_spec.sh
+### File: past-exam-question-to-csv_spec.sh
 ##
-## past-exam-questions-to-csv.sh の検証。
+## past-exam-question-to-csv.sh の検証。
 ##
 ## Usage:
 ##
 ## ------ Text ------
-## shellspec past-exam-questions-to-csv_spec.sh
+## shellspec past-exam-question-to-csv_spec.sh
 ## ------------------
 ##
 ## Metadata:
@@ -30,7 +30,7 @@ eval "$(shellspec - -c) exit 1"
 
 Include 'lib/sysexits.sh'
 
-% TESTFILE: 'bin/past-exam-questions-to-csv.sh'
+% TESTFILE: 'bin/past-exam-question-to-csv.sh'
 
 Describe '書き込み不可へのアウトプットの検証'
 	Parameters:dynamic

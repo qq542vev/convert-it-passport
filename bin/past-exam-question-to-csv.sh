@@ -409,7 +409,7 @@ eval "$(getoptions parser_definition parse "${0}")"
 parse ${@+"${@}"}
 eval "set -- ${REST}"
 
-readonly "exams=$(
+EXAMS="$(
 	cat <<-'__EOF__'
 	r05_haru https://web.archive.org/web/20230620000000/https://www.itpassportsiken.com/kakomon/05_haru/q%d.html
 	r04_haru https://web.archive.org/web/20230620000000/https://www.itpassportsiken.com/kakomon/04_haru/q%d.html
@@ -439,7 +439,7 @@ readonly "exams=$(
 	h21_haru https://web.archive.org/web/20230620000000/https://www.itpassportsiken.com/kakomon/21_haru/q%d.html
 	__EOF__
 )"
-readonly "xpathes=$(
+XPATHES="$(
 	cat <<-'__EOF__'
 	//main//h2//text()
 	//*[@id="mondai"]/node()
@@ -449,11 +449,8 @@ readonly "xpathes=$(
 	//main//h3[.="分類"]/following-sibling::p[1]//text()
 	__EOF__
 )"
-readonly 'imgsrcXpath=(//*[@id="mondai"] | //main//*[@class="ansbg"][1] | //main//*[@class="ansbg"][2])//img[@src]/@src'
-readonly "tmpDir=$(mktemp -d)"
-readonly "download=${tmpDir}/download"
-readonly "format=${tmpDir}/format"
-readonly "awkRangePrint=$(
+IMGSRC_XPATH='(//*[@id="mondai"] | //main//*[@class="ansbg"][1] | //main//*[@class="ansbg"][2])//img[@src]/@src'
+AWK_RANGE_PRINT="$(
 	cat <<-'__EOF__'
 	BEGIN {
 		count = split(ARGV[1], ranges, ",");
@@ -469,7 +466,11 @@ readonly "awkRangePrint=$(
 	}
 	__EOF__
 )"
+tmpDir="$(mktemp -d)"
+download="${tmpDir}/download"
+format="${tmpDir}/format"
 
+readonly 'EXAMS' 'XPATHES' 'IMGSRC_XPATH' 'AWK_RANGE_PRINT'
 export "TMPDIR=${tmpDir}"
 
 if command xmlstarlet --help >'/dev/null' 2>&1; then
@@ -481,36 +482,36 @@ fi
 case "${imageDir}" in ?*)
 	mkdir -p "${imageDir}" || exit "${EX_CANTCREAT}"
 
-	if [ '!' -w "${imageDir}" ]; then
+	if ! [ -w "${imageDir}" ]; then
 		printf "%s: '%s' の書き込み許可がありません。\\n" "${0##*/}" "${imageDir}" >&2
 
 		end_call "${EX_CANTCREAT}"
 	fi
 esac
 
-putln "${exams}" | while IFS=' ' read -r name pattarn; do
+putln "${EXAMS}" | while IFS=' ' read -r name pattarn; do
 	eval "output=\"\${output_${name}}\""
 	dir="$(dirname -- "${output}"; put '_')"; dir="${dir%?_}"
 
 	mkdir -p "${dir}" || exit "${EX_CANTCREAT}"
 
 	if [ -e "${output}" ]; then
-		if [ '!' -f "${output}" ]; then
- 			exit "${EX_USAGE}" "'"${output}"' は通常ファイルではありません。"
-		elif [ '!' -w "${output}" ]; then
+		if ! [ -f "${output}" ]; then
+ 			exit "${EX_USAGE}" "'${output}' は通常ファイルではありません。"
+		elif ! [ -w "${output}" ]; then
 			exit "${EX_CANTCREAT}" "'${output}' の作成または書き込み許可がありません。"
 		fi
-	elif [ '!' -w "${dir}" ]; then
+	elif ! [ -w "${dir}" ]; then
 		exit "${EX_CANTCREAT}" "'${dir}' の書き込み許可がありません。"
 	fi
 done || end_call "${?}"
 
-putln "${exams}" | while IFS=' ' read -r name pattarn; do
+putln "${EXAMS}" | while IFS=' ' read -r name pattarn; do
 	eval "output=\"\${output_${name}}\""
 	eval "range=\"\${range_${name}}\""
 
 	case "${output}" in ?*)
-		awk -- "${awkRangePrint}" "${range}" | while IFS='' read -r n; do
+		awk -- "${AWK_RANGE_PRINT}" "${range}" | while IFS='' read -r n; do
 			url=$(printf "${pattarn}" "${n}")
 
 			until wget --no-config --convert-links --output-document="${download}" -- "${url}"; do
@@ -520,12 +521,12 @@ putln "${exams}" | while IFS=' ' read -r name pattarn; do
 			sed -e 's/charset="Shift_JIS"/charset="CP932"/' -- "${download}" | xml --quiet format --encode 'UTF-8' --html - >|"${format}"
 
 			case "${imageDir}" in ?*)
-				WAITTIME="${wait}" imgsrc_repalase "${imageDir}" "${imgsrcXpath}" "${format}";;
+				WAITTIME="${wait}" imgsrc_repalase "${imageDir}" "${IMGSRC_XPATH}" "${format}";;
 			esac
 
 			printf '"%s:%03d",' "${name}" "${n}"
 
-			printf '%s\n' "${xpathes}" | while IFS='' read -r xpath; do
+			printf '%s\n' "${XPATHES}" | while IFS='' read -r xpath; do
 				field=$(xml select --template --copy-of "${xpath}" "${format}")
 				replacein -a 'field' '"' '""'
 

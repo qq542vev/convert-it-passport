@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
-### File: glossary-to-csv_spec.sh
+### File: word-quiz-to-csv_spec.sh
 ##
-## glossary-to-csv.sh の検証。
+## word-quiz-to-csv.sh の検証。
 ##
 ## Usage:
 ##
 ## ------ Text ------
-## shellspec glossary-to-csv_spec.sh
+## shellspec word-quiz-to-csv_spec.sh
 ## ------------------
 ##
 ## Metadata:
@@ -30,7 +30,7 @@ eval "$(shellspec - -c) exit 1"
 
 Include 'lib/sysexits.sh'
 
-% TESTFILE: 'glossary-to-csv.sh'
+% TESTFILE: 'bin/word-quiz-to-csv.sh'
 
 Describe '書き込み不可へのアウトプットの検証'
 	Parameters:dynamic

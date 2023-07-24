@@ -168,14 +168,14 @@ eval "$(getoptions parser_definition parse "${0}")"
 parse ${@+"${@}"}
 eval "set -- ${REST}"
 
-readonly "indexes=$(
+INDEXES="$(
 	cat <<-'__EOF__'
 	strategy https://web.archive.org/web/20230707000000/https://www.itpassportsiken.com/word/index_st.html
 	management https://web.archive.org/web/20230707000000/https://www.itpassportsiken.com/word/index_ma.html
 	technology https://web.archive.org/web/20230707000000/https://www.itpassportsiken.com/word/index_te.html
 	__EOF__
 )"
-readonly "xpathes=$(
+XPATHES="$(
 	cat <<-'__EOF__'
 	//*[@id="quizAWrap"]/*[@class="quizAText"]/text()[1]
 	//*[@id="quizAWrap"]/*[@class="quizAText"]/node()[self::* or self::text()]
@@ -185,10 +185,11 @@ readonly "xpathes=$(
 	__EOF__
 )"
 
-readonly "tmpDir=$(mktemp -d)"
-readonly "download=${tmpDir}/download"
-readonly "format=${tmpDir}/format"
+tmpDir="$(mktemp -d)"
+download="${tmpDir}/download"
+format="${tmpDir}/format"
 
+readonly 'INDEXES' 'XPATHES'
 export "TMPDIR=${tmpDir}"
 
 if command xmlstarlet --help >|'/dev/null' 2>&1; then
@@ -197,24 +198,24 @@ if command xmlstarlet --help >|'/dev/null' 2>&1; then
 	}
 fi
 
-putln "${indexes}" | while IFS=' ' read -r category index; do
+putln "${INDEXES}" | while IFS=' ' read -r category index; do
 	eval "output=\"\${output_${category}}\""
 	dir="$(dirname -- "${output}"; put '_')"; dir="${dir%?_}"
 
 	mkdir -p "${dir}" || exit "${EX_CANTCREAT}"
 
 	if [ -e "${output}" ]; then
-		if [ '!' -f "${output}" ]; then
- 			exit "${EX_USAGE}" "'"${output}"' は通常ファイルではありません。"
-		elif [ '!' -w "${output}" ]; then
+		if ! [ -f "${output}" ]; then
+ 			exit "${EX_USAGE}" "'${output}' は通常ファイルではありません。"
+		elif ! [ -w "${output}" ]; then
 			exit "${EX_CANTCREAT}" "'${output}' の作成または書き込み許可がありません。"
 		fi
-	elif [ '!' -w "${dir}" ]; then
+	elif ! [ -w "${dir}" ]; then
 		exit "${EX_CANTCREAT}" "'${dir}' の書き込み許可がありません。"
 	fi
 done || end_call "${?}"
 
-putln "${indexes}" | while IFS=' ' read -r category index; do
+putln "${INDEXES}" | while IFS=' ' read -r category index; do
 	eval "output=\"\${output_${category}}\""
 
 	case "${output}" in ?*)
@@ -235,7 +236,7 @@ putln "${indexes}" | while IFS=' ' read -r category index; do
 
 			sed -e '/<link /d' -- "${download}" | xml --quiet format --encode 'UTF-8' --html - >|"${format}"
 
-			putln "${xpathes}" | while IFS='' read -r xpath; do
+			putln "${XPATHES}" | while IFS='' read -r xpath; do
 				field="$(xml select --template --copy-of "${xpath}" "${format}")"
 				replacein -a 'field' '"' '""'
 

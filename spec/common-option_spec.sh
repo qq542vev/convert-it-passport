@@ -28,9 +28,9 @@
 
 eval "$(shellspec - -c) exit 1"
 
-Include 'spec/sysexits.sh'
+Include 'lib/sysexits.sh'
 
-% TESTFILES: 'glossary-to-csv.sh past-exam-questions-to-csv.sh'
+% TESTFILES: "$(find bin -name '*.sh' -type f)"
 
 version_check() {
 	awk -- '
@@ -64,7 +64,7 @@ Describe '-v, --version の検証'
 
 	Example "${1} ${2}"
 		When run script "${1}" "${2}"
-		The stdout should satisfy version_check "${1}"
+		The stdout should satisfy version_check "${1##*/}"
 		The length of stderr should equal 0
 		The status should equal 0
 	End
