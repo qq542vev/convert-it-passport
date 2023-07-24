@@ -6,8 +6,8 @@
 
 		id - 6a0c7922-9366-4e32-adf5-581664bf07c2
 		author - <qq542vev at https://purl.org/meta/me/>
-		version - 0.1.0
-		date - 2023-06-23
+		version - 1.0.0
+		date - 2023-07-25
 		since - 2023-06-23
 		copyright - Copyright (C) 2023-2023 qq542vev. Some rights reserved.
 		license - <CC-BY at https://creativecommons.org/licenses/by/4.0/>
@@ -32,6 +32,6 @@
 プログラムが正常に動作するためには [POSIX Utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html), [GNU Wget](https://www.gnu.org/software/wget/), [XMLStarlet](https://xmlstar.sourceforge.net/) がご使用のコンピューターにインストールされている必要があります。
 
 ディレクトリ内にある `collection.colpkg` を Anki 
-にインポートします。細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
+にインポートします。(注意: 現在のデッキコレクションが全て新たなものに置き換えられます。)細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
 
 [![ファイルの読み込み](images/thumbnails/anki-menu-read.png)](images/anki-menu-read.png "ファイルの読み込み") [![CSV ファイルのインポート](images/thumbnails/anki-read-option.png)](images/anki-read-option.png "CSV ファイルのインポート")

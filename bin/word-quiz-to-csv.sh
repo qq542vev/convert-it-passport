@@ -8,8 +8,8 @@
 ##
 ##   id - 57836d9e-6388-4dc9-8262-ae29c8bc0d49
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 0.0.1
-##   date - 2023-07-07
+##   version - 1.0.0
+##   date - 2023-07-25
 ##   since - 2023-07-07
 ##   copyright - Copyright (C) 2023-2023 qq542vev. Some rights reserved.
 ##   license - <CC-BY at https://creativecommons.org/licenses/by/4.0/>

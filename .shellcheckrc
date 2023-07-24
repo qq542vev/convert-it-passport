@@ -1,2 +1,22 @@
+### File: .shellcheckrc
+##
+## Shell Check 用の設定ファイル。
+##
+## Metadata:
+##
+##   id - 082a3c12-7267-4e85-b97c-ce8010f3da65
+##   author - <qq542vev at https://purl.org/meta/me/>
+##   version - 1.0.0
+##   date - 2023-07-25
+##   since - 2023-07-25
+##   copyright - Copyright (C) 2023-2023 qq542vev. Some rights reserved.
+##   license - <CC-BY at https://creativecommons.org/licenses/by/4.0/>
+##   package - convert-it-passport
+##
+## See Also:
+##
+##   * <Project homepage at https://github.com/qq542vev/convert-it-passport>
+##   * <Bag report at https://github.com/qq542vev/convert-it-passport/issues>
+
 shell=sh
 disable=SC2241
