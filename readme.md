@@ -34,4 +34,4 @@
 ディレクトリ内にある `collection.colpkg` を Anki 
 にインポートします。細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
 
-[[!ファイルの読み込み](images/thumbnails/anki-menu-read.png)](images/anki-menu-read.png "ファイルの読み込み") [[!CSV ファイルのインポート](images/thumbnails/anki-read-option.png)](images/anki-read-option.png "CSV ファイルのインポート")
+[![ファイルの読み込み](images/thumbnails/anki-menu-read.png)](images/anki-menu-read.png "ファイルの読み込み") [![CSV ファイルのインポート](images/thumbnails/anki-read-option.png)](images/anki-read-option.png "CSV ファイルのインポート")
