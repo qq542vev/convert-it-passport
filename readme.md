@@ -25,8 +25,13 @@
 
 ## Anki でITパスポートの過去問を学ぶ
 
+[![Anki デッキリスト](images/thumbnails/anki-deck-list.png)](images/anki-deck-list.png "Anki デッキリスト")
+
 [GitHub Release](https://github.com/qq542vev/convert-it-passport/releases/latest) から最新版をダウンロードして、ファイルを解凍してください。ディレクトリ内にある `./release/past-exam-question-to-csv.sh` と `./release/word-quiz-to-csv.sh` を実行します。問題と解答をダウンロードして、CSV ファイルへの変換が行われます。引数が無い場合、全ての問題と解答がダウンロードされます。コマンドライン引数にオプションをつけることで、一部のみをダウンロードすることもできます。`--help` をつけて実行し、詳細を確認してください。
 
 プログラムが正常に動作するためには [POSIX Utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html), [GNU Wget](https://www.gnu.org/software/wget/), [XMLStarlet](https://xmlstar.sourceforge.net/) がご使用のコンピューターにインストールされている必要があります。
 
-ディレクトリ内にある `collection.colpkg` を Anki にインポートします。細分化された空のデッキが取り込まれますので、各デッキ内にCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
+ディレクトリ内にある `collection.colpkg` を Anki 
+にインポートします。細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
+
+[!ファイルの読み込み](images/thumbnails/anki-menu-read.png)](images/anki-menu-read.png "ファイルの読み込み") [!CSV ファイルのインポート](images/thumbnails/anki-read-option.png)](images/anki-read-option.png "CSV ファイルのインポート")
