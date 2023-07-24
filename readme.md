@@ -25,7 +25,7 @@
 
 ## Anki でITパスポートの過去問を学ぶ
 
-[![Anki デッキリスト](images/thumbnails/anki-deck-list.png)](images/anki-deck-list.png "Anki デッキリスト")
+[![Anki デッキリスト](images/thumbnails/anki-deck-list.png)](images/anki-deck-list.png "Anki デッキリスト") [![問題](images/thumbnails/anki-question.png)](images/anki-question.png "問題")
 
 [GitHub Release](https://github.com/qq542vev/convert-it-passport/releases/latest) から最新版をダウンロードして、ファイルを解凍してください。ディレクトリ内にある `./release/past-exam-question-to-csv.sh` と `./release/word-quiz-to-csv.sh` を実行します。問題と解答をダウンロードして、CSV ファイルへの変換が行われます。引数が無い場合、全ての問題と解答がダウンロードされます。コマンドライン引数にオプションをつけることで、一部のみをダウンロードすることもできます。`--help` をつけて実行し、詳細を確認してください。
 
