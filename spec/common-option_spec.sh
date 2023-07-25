@@ -30,7 +30,7 @@ eval "$(shellspec - -c) exit 1"
 
 Include 'lib/sysexits.sh'
 
-% TESTFILES: 'bin/past-exam-question-to-csv.sh' 'bin/word-quiz-to-csv.sh'
+% TESTFILES: 'bin/past-exam-question-to-csv.sh bin/word-quiz-to-csv.sh'
 
 version_check() {
 	awk -- '
