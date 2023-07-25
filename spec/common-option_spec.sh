@@ -28,8 +28,6 @@
 
 eval "$(shellspec - -c) exit 1"
 
-Include 'lib/sysexits.sh'
-
 % TESTFILES: 'bin/past-exam-question-to-csv.sh bin/word-quiz-to-csv.sh'
 
 version_check() {
@@ -41,6 +39,17 @@ version_check() {
 		}
 	' "${version_check}" "${1}"
 }
+
+Describe 'ShellCheck による検証'
+	Parameters:value ${TESTFILES}
+
+	Example "shellcheck --severity=error -- ${1}"
+		When call shellcheck --severity=error "${1}"
+		The length of stdout should equal 0
+		The length of stderr should equal 0
+		The status should equal 0
+	End
+End
 
 Describe '-h, --help の検証'
 	Parameters:matrix

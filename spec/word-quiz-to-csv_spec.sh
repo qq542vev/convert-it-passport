@@ -28,8 +28,6 @@
 
 eval "$(shellspec - -c) exit 1"
 
-Include 'lib/sysexits.sh'
-
 % TESTFILE: 'bin/word-quiz-to-csv.sh'
 
 Describe '書き込み不可へのアウトプットの検証'
