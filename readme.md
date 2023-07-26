@@ -27,10 +27,10 @@
 
 [![Anki デッキリスト](images/thumbnails/anki-deck-list.png)](images/anki-deck-list.png "Anki デッキリスト") [![問題](images/thumbnails/anki-question.png)](images/anki-question.png "問題")
 
-[GitHub Release](https://github.com/qq542vev/convert-it-passport/releases/latest) から最新版をダウンロードして、ファイルを解凍してください。ディレクトリ内にある `./release/past-exam-question-to-csv.sh` と `./release/word-quiz-to-csv.sh` を実行します。問題と解答をダウンロードして、CSV ファイルへの変換が行われます。引数が無い場合、全ての問題と解答がダウンロードされます。コマンドライン引数にオプションをつけることで、一部のみをダウンロードすることもできます。`--help` をつけて実行し、詳細を確認してください。
+[GitHub Release](https://github.com/qq542vev/convert-it-passport/releases/latest) から最新版をダウンロードして、ファイルを解凍してください。ディレクトリ内にある `./release/past-exam-question-to-csv.sh` と `./release/word-quiz-to-csv.sh` を実行します。問題と解答をダウンロードして、CSV ファイルへの変換が行われます。引数が無い場合、全ての問題と解答がダウンロードされます。コマンドライン引数にオプションをつけることで、一部のみをダウンロードできます。`--help` をつけて実行し、詳細を確認してください。
 
 プログラムが正常に動作するためには [POSIX Utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html), [GNU Wget](https://www.gnu.org/software/wget/), [XMLStarlet](https://xmlstar.sourceforge.net/) がご使用のコンピューターにインストールされている必要があります。
 
-ディレクトリ内にある `collection.colpkg` を Anki にインポートします。(注意: 現在のデッキコレクションが全て新たなものに置き換えられます。)細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれ適切なものを選択してください。
+ディレクトリ内にある `collection.colpkg` を Anki にインポートします。(注意: 現在の全てのデッキコレクションが新たなものに置き換えられます。)細分化された空のデッキが取り込まれますので、各デッキ内に先程作成されたCSVファイルを読み込んでいきます。カードタイプはそれぞれで適切なものを選択してください。
 
 [![ファイルの読み込み](images/thumbnails/anki-menu-read.png)](images/anki-menu-read.png "ファイルの読み込み") [![CSV ファイルのインポート](images/thumbnails/anki-read-option.png)](images/anki-read-option.png "CSV ファイルのインポート")
