@@ -402,7 +402,7 @@ parser_definition() {
 }
 
 case "${#}" in '0')
-	set -- --r5-haru --r4-haru --r3-haru --r2-aki --r1-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru
+	set -- --r05-haru --r04-haru --r03-haru --r02-aki --r01-aki --h31-haru --h30-aki --h30-haru --h29-aki --h29-haru --h28-aki --h28-haru --h27-aki --h27-haru --h26-aki --h26-haru --h25-aki --h25-haru --h24-aki --h24-haru --h23-aki --h23-toku --h22-aki --h22-haru --h21-aki --h21-haru
 esac
 
 eval "$(getoptions parser_definition parse "${0}")"
