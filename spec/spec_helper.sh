@@ -20,7 +20,6 @@
 
 set -efu
 
-
 . 'lib/sysexits.sh'
 
 md5checksum() {
