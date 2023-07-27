@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-### File: spec/specfile_spec.sh
+### File: specfile_spec.sh
 ##
 ## Spec File を検証する。
 ##
