@@ -14,8 +14,8 @@
 ##
 ##   id - 764ca0db-bda8-499f-a94c-fcba6d0b6506
 ##   author - <qq542vev at https://purl.org/meta/me/>
-##   version - 1.0.0
-##   date - 2023-07-25
+##   version - 1.1.0
+##   date - 2023-07-29
 ##   since - 2023-07-14
 ##   copyright - Copyright (C) 2023-2023 qq542vev. Some rights reserved.
 ##   license - <CC-BY at https://creativecommons.org/licenses/by/4.0/>
@@ -48,6 +48,20 @@ Describe 'ShellCheck による検証'
 		The length of stdout should equal 0
 		The length of stderr should equal 0
 		The status should equal 0
+	End
+End
+
+Describe '不正なコマンドライン引数の検証'
+	Parameters:matrix
+		${TESTFILES}
+		-0 --nil
+	End
+
+	Example "${1} ${2}"
+		When run script "${1}" "${2}"
+		The length of stdout should equal 0
+		The length of stderr should not equal 0
+		The status should equal "${EX_USAGE}"
 	End
 End
 
