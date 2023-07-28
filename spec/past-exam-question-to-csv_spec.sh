@@ -37,6 +37,7 @@ Describe '書き込み不可へのアウトプットの検証'
 			%data "${option}" 'spec'                 "${EX_USAGE}"
 			%data "${option}" 'spec/unwritable-file' "${EX_CANTCREAT}"
 			%data "${option}" 'spec/unwritable-directory/file' "${EX_CANTCREAT}"
+			%data "${option}" 'spec/unexecutable-directory/file' "${EX_CANTCREAT}"
 			%data "${option}" 'non-existent/'        "${EX_USAGE}"
 		done
 	End

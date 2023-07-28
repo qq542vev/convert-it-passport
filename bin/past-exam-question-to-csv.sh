@@ -482,8 +482,12 @@ fi
 case "${imageDir}" in ?*)
 	mkdir -p "${imageDir}" || exit "${EX_CANTCREAT}"
 
-	if ! [ -w "${imageDir}" ]; then
-		printf "%s: '%s' の書き込み許可がありません。\\n" "${0##*/}" "${imageDir}" >&2
+	if ! [ -x "${imageDir}" ]; then
+		printf "%s: '%s' の実行権限がありません。\\n" "${0##*/}" "${imageDir}" >&2
+
+		end_call "${EX_CANTCREAT}"
+	elif ! [ -w "${imageDir}" ]; then
+		printf "%s: '%s' の書き込み権限がありません。\\n" "${0##*/}" "${imageDir}" >&2
 
 		end_call "${EX_CANTCREAT}"
 	fi
@@ -495,14 +499,16 @@ putln "${EXAMS}" | while IFS=' ' read -r name pattarn; do
 
 	mkdir -p "${dir}" || exit "${EX_CANTCREAT}"
 
-	if [ -e "${output}" ]; then
+	if ! [ -x "${dir}" ]; then
+		exit "${EX_CANTCREAT}" "'${dir}' の実行権限がありません。"
+	elif [ -e "${output}" ]; then
 		if ! [ -f "${output}" ]; then
  			exit "${EX_USAGE}" "'${output}' は通常ファイルではありません。"
 		elif ! [ -w "${output}" ]; then
-			exit "${EX_CANTCREAT}" "'${output}' の作成または書き込み許可がありません。"
+			exit "${EX_CANTCREAT}" "'${output}' の書き込み権限がありません。"
 		fi
 	elif ! [ -w "${dir}" ]; then
-		exit "${EX_CANTCREAT}" "'${dir}' の書き込み許可がありません。"
+		exit "${EX_CANTCREAT}" "'${dir}' の書き込み権限がありません。"
 	fi
 done || end_call "${?}"
 
