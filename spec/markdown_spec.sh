@@ -35,8 +35,8 @@ Describe 'markdownlint による検証'
 
 	Example "markdownlint -- ${1}"
 		When call markdownlint -- "${1}"
-		The length of stdout should equal 0
-		The length of stderr should equal 0
+		The stdout should equal ''
+		The stderr should equal ''
 		The status should equal 0
 	End
 End

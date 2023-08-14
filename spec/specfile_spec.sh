@@ -31,8 +31,8 @@ eval "$(shellspec - -c) exit 1"
 Describe 'Spec File の検証'
 	Example 'shellspec --syntax-check'
 		When call shellspec --syntax-check
-		The length of stdout should not equal 0
-		The length of stderr should equal 0
+		The stdout should not equal ''
+		The stderr should equal ''
 		The status should equal 0
 	End
 End

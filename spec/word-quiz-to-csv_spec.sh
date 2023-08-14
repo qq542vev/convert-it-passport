@@ -44,8 +44,8 @@ Describe '書き込み不可へのアウトプットの検証'
 
 	Example "${TESTFILE} ${1}=${2}"
 		When run script "${TESTFILE}" "${1}=${2}"
-		The length of stdout should equal 0
-		The length of stderr should not equal 0
+		The stdout should equal ''
+		The stderr should not equal ''
 		The status should equal "${3}"
 	End
 End
@@ -63,7 +63,7 @@ xDescribe 'アウトプット内容の検証'
 	Example "${TESTFILE} ${1}"
 		When run script "${TESTFILE}" "${1}"
 		The stdout should satisfy md5checksum "${2}"
-		The length of stderr should not equal 0
+		The stderr should not equal ''
 		The status should equal 0
 	End
 End

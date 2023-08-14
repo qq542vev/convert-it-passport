@@ -44,8 +44,8 @@ Describe '書き込み不可へのアウトプットの検証'
 
 	Example "${TESTFILE} ${1}=${2}"
 		When run script "${TESTFILE}" "${1}=${2}"
-		The length of stdout should equal 0
-		The length of stderr should not equal 0
+		The stdout should equal ''
+		The stderr should not equal ''
 		The status should equal "${3}"
 	End
 End
@@ -70,14 +70,14 @@ Describe 'range の検証'
 
 	Example "${TESTFILE} ${1}-range=${2}"
 		When run script "${TESTFILE}" "${1}-range=${2}"
-		The length of stdout should equal 0
+		The stdout should equal ''
 		The status should equal "${3}"
 
 		case "${3}" in
 			"${EX_OK}")
-				The length of stderr should equal 0;;
+				The stderr should equal '';;
 			*)
-				The length of stderr should not equal 0;;
+				The stderr should not equal '';;
 		esac
 	End
 End
@@ -91,14 +91,14 @@ Describe 'image-dir の検証'
 
 	Example "${TESTFILE} --image-dir ${1}"
 		When run script "${TESTFILE}" '--image-dir' "${1}"
-		The length of stdout should equal 0
+		The stdout should equal ''
 		The status should equal "${2}"
 
 		case "${2}" in
 			"${EX_OK}")
-				The length of stderr should equal 0;;
+				The stderr should equal '';;
 			*)
-				The length of stderr should not equal 0;;
+				The stderr should not equal '';;
 		esac
 	End
 End
@@ -136,7 +136,7 @@ xDescribe 'アウトプット内容の検証'
 	Example "${TESTFILE} ${1}"
 		When run script "${TESTFILE}" "${1}"
 		The stdout should satisfy md5checksum "${2}"
-		The length of stderr should not equal 0
+		The stderr should not equal ''
 		The status should equal 0
 	End
 End

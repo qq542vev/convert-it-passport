@@ -45,8 +45,8 @@ Describe 'ShellCheck による検証'
 
 	Example "shellcheck --severity=error -- ${1}"
 		When call shellcheck --severity=error "${1}"
-		The length of stdout should equal 0
-		The length of stderr should equal 0
+		The stdout should equal ''
+		The stderr should equal ''
 		The status should equal 0
 	End
 End
@@ -59,8 +59,8 @@ Describe '不正なコマンドライン引数の検証'
 
 	Example "${1} ${2}"
 		When run script "${1}" "${2}"
-		The length of stdout should equal 0
-		The length of stderr should not equal 0
+		The stdout should equal ''
+		The stderr should not equal ''
 		The status should equal "${EX_USAGE}"
 	End
 End
@@ -73,8 +73,8 @@ Describe '-h, --help の検証'
 
 	Example "${1} ${2}"
 		When run script "${1}" "${2}"
-		The length of stdout should not equal 0
-		The length of stderr should equal 0
+		The stdout should not equal ''
+		The stderr should equal ''
 		The status should equal 0
 	End
 End
@@ -88,7 +88,7 @@ Describe '-v, --version の検証'
 	Example "${1} ${2}"
 		When run script "${1}" "${2}"
 		The stdout should satisfy version_check "${1##*/}"
-		The length of stderr should equal 0
+		The stderr should equal ''
 		The status should equal 0
 	End
 End
@@ -114,14 +114,14 @@ Describe '-w, --wait の検証'
 
 	Example "${1} ${2} ${3}"
 		When run script "${1}" "${2}" "${3}"
-		The length of stdout should equal 0
+		The stdout should equal ''
 		The status should equal "${4}"
 
 		case "${4}" in
 			"${EX_OK}")
-				The length of stderr should equal 0;;
+				The stderr should equal '';;
 			*)
-				The length of stderr should not equal 0;;
+				The stderr should not equal '';;
 		esac
 	End
 End
